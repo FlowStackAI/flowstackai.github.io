@@ -684,20 +684,29 @@
             }
         }
 
-        // Check if URL has password reset token - IZBOLJŠANA
+        // POPRAVLJENA FUNKCIJA - Check if URL has password reset token
         function checkPasswordReset() {
-            // Preveri URL hash za reset token
-            const urlParams = new URLSearchParams(window.location.hash.substring(1));
+            console.log('🔍 Checking for password reset token...');
+            
+            // Preveri URL parameters (ker Supabase pošlje redirect)
+            const urlParams = new URLSearchParams(window.location.search);
             const type = urlParams.get('type');
-            const access_token = urlParams.get('access_token');
+            const token = urlParams.get('token');
             
-            console.log('🔍 Checking URL for password reset:', { type, access_token });
+            console.log('URL Search Params:', { type, token });
             
-            if (type === 'recovery' && access_token) {
-                console.log('✅ Password reset token found! Opening password modal...');
+            // Preveri tudi hash del (za vsak slučaj)
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const hashType = hashParams.get('type');
+            const access_token = hashParams.get('access_token');
+            
+            console.log('URL Hash Params:', { hashType, access_token });
+            
+            if ((type === 'recovery' && token) || (hashType === 'recovery' && access_token)) {
+                console.log('✅ Password reset token found!');
                 
-                // Shrani token in odpri modal
-                sessionStorage.setItem('reset_token', access_token);
+                const resetToken = token || access_token;
+                sessionStorage.setItem('reset_token', resetToken);
                 openNewPasswordModal();
                 
                 // Počisti URL brez reloada
@@ -705,7 +714,7 @@
                 return true;
             }
             
-            // Preveri tudi sessionStorage za token
+            // Preveri sessionStorage za obstoječi token
             const storedToken = sessionStorage.getItem('reset_token');
             if (storedToken) {
                 console.log('✅ Stored reset token found!');
@@ -729,7 +738,6 @@
             signupBtn.textContent = 'Creating Account...';
             
             try {
-                // Create user in Supabase with email verification
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -737,7 +745,7 @@
                         data: {
                             full_name: fullName
                         },
-                        emailRedirectTo: 'https://flowstackai.github.io'
+                        emailRedirectTo: window.location.origin
                     }
                 });
 
@@ -807,7 +815,6 @@
                     showMessage('loginMessage', '✅ Login successful! Redirecting...', 'success');
                     setTimeout(() => {
                         closeLoginModal();
-                        // Redirect to dashboard
                         // window.location.href = '/dashboard.html';
                     }, 2000);
                 }
@@ -828,7 +835,7 @@
             }
         });
 
-        // FORGOT PASSWORD
+        // POPRAVLJENA FORGOT PASSWORD
         document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -839,8 +846,14 @@
             forgotBtn.textContent = 'Sending...';
             
             try {
+                // Uporabi trenutno domeno za redirect
+                const redirectUrl = window.location.origin;
+                
+                console.log('Sending reset email to:', email);
+                console.log('Redirect URL:', redirectUrl);
+                
                 const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: 'https://flowstackai.github.io'
+                    redirectTo: redirectUrl
                 });
 
                 if (error) throw error;
@@ -853,6 +866,7 @@
                 document.getElementById('forgotPasswordForm').reset();
                 
             } catch (error) {
+                console.error('Error sending reset email:', error);
                 showMessage('forgotPasswordMessage', 
                     'Error sending reset link: ' + error.message, 
                     'error'
@@ -891,7 +905,6 @@
                     'success'
                 );
                 
-                // Clear stored token
                 sessionStorage.removeItem('reset_token');
                 document.getElementById('newPasswordForm').reset();
                 
@@ -911,10 +924,14 @@
             }
         });
 
-        // Check auth state and password reset on load
+        // POPRAVLJEN INITIALIZATION
         document.addEventListener('DOMContentLoaded', function() {
-            // Check for password reset
-            checkPasswordReset();
+            console.log('🚀 DOM loaded, checking for password reset...');
+            
+            // Takoj preveri za password reset
+            setTimeout(() => {
+                checkPasswordReset();
+            }, 100);
             
             // Animation for feature cards
             const cards = document.querySelectorAll('.feature-card');
@@ -926,23 +943,26 @@
             });
         });
 
-        // Avtomatsko preveri za password reset vsakih 500ms za 5 sekund
-        let checkCount = 0;
-        const checkInterval = setInterval(() => {
-            if (checkPasswordReset()) {
-                console.log('✅ Password reset detected and handled!');
-                clearInterval(checkInterval);
-            }
-            checkCount++;
-            if (checkCount > 10) { // Po 5 sekundah (10 * 500ms)
-                clearInterval(checkInterval);
-                console.log('⏰ Password reset check timeout');
-            }
-        }, 500);
+        // Dodatno preverjanje ko se spremeni URL
+        window.addEventListener('hashchange', function() {
+            console.log('🔗 Hash changed, checking for password reset...');
+            setTimeout(() => {
+                checkPasswordReset();
+            }, 100);
+        });
+
+        window.addEventListener('load', function() {
+            console.log('📄 Page fully loaded, checking for password reset...');
+            setTimeout(() => {
+                checkPasswordReset();
+            }, 200);
+        });
 
         // Auth state listener
         supabase.auth.onAuthStateChange((event, session) => {
+            console.log('🔐 Auth state changed:', event);
             if (event === 'PASSWORD_RECOVERY') {
+                console.log('🔄 Password recovery event detected!');
                 openNewPasswordModal();
             }
         });
