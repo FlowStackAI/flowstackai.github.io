@@ -615,8 +615,219 @@
         const supabaseUrl = 'https://mdvczbswbwbghschjthq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kdmN6YnN3YndiZ2hzY2hqdGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTcwNzIsImV4cCI6MjA3ODc3MzA3Mn0.LhiKgP0EWAANGJK7ocN8rbTBmEFttgTsCqwEzHzbezk';
         
-        // Initialize Supabase
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        // Počakaj, da se Supabase SDK naloži
+        let supabase;
+        
+        function initializeSupabase() {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log('✅ Supabase initialized successfully');
+                setupEventListeners();
+                checkPasswordReset();
+            } else {
+                console.log('❌ Supabase SDK not loaded, retrying...');
+                setTimeout(initializeSupabase, 100);
+            }
+        }
+
+        function setupEventListeners() {
+            // SUPABASE SIGNUP
+            document.getElementById('signupForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const fullName = document.getElementById('fullName').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const signupBtn = document.getElementById('signupBtn');
+                
+                signupBtn.disabled = true;
+                signupBtn.textContent = 'Creating Account...';
+                
+                try {
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                        options: {
+                            data: {
+                                full_name: fullName
+                            },
+                            emailRedirectTo: window.location.origin
+                        }
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user) {
+                        if (data.user.identities && data.user.identities.length === 0) {
+                            showMessage('signupMessage', 
+                                'Account already exists with this email. Please log in instead.', 
+                                'error'
+                            );
+                        } else if (data.user.confirmed_at) {
+                            showMessage('signupMessage', 
+                                'Account created and email verified! You can now log in.', 
+                                'success'
+                            );
+                        } else {
+                            showMessage('signupMessage', 
+                                '🎉 Account created! Please check your email (including spam folder) for verification link.', 
+                                'success'
+                            );
+                        }
+                        
+                        document.getElementById('signupForm').reset();
+                    }
+                    
+                } catch (error) {
+                    let errorMessage = 'Error creating account. ';
+                    
+                    if (error.message.includes('already registered')) {
+                        errorMessage += 'Email already exists. Please log in.';
+                    } else if (error.message.includes('Invalid email')) {
+                        errorMessage += 'Invalid email address.';
+                    } else if (error.message.includes('Password')) {
+                        errorMessage += 'Password should be at least 6 characters.';
+                    } else {
+                        errorMessage += error.message;
+                    }
+                    
+                    showMessage('signupMessage', errorMessage, 'error');
+                } finally {
+                    signupBtn.disabled = false;
+                    signupBtn.textContent = 'CREATE ACCOUNT';
+                }
+            });
+
+            // SUPABASE LOGIN
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                const loginBtn = document.getElementById('loginBtn');
+                
+                loginBtn.disabled = true;
+                loginBtn.textContent = 'Logging in...';
+                
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user) {
+                        showMessage('loginMessage', '✅ Login successful! Redirecting...', 'success');
+                        setTimeout(() => {
+                            closeLoginModal();
+                        }, 2000);
+                    }
+                    
+                } catch (error) {
+                    let errorMessage = 'Login failed. ';
+                    if (error.message.includes('Invalid login credentials')) {
+                        errorMessage += 'Invalid email or password.';
+                    } else if (error.message.includes('Email not confirmed')) {
+                        errorMessage += 'Please verify your email address first.';
+                    } else {
+                        errorMessage += error.message;
+                    }
+                    showMessage('loginMessage', errorMessage, 'error');
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'LOG IN';
+                }
+            });
+
+            // POPRAVLJENA FORGOT PASSWORD
+            document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('forgotEmail').value;
+                const forgotBtn = document.getElementById('forgotPasswordBtn');
+                
+                forgotBtn.disabled = true;
+                forgotBtn.textContent = 'Sending...';
+                
+                try {
+                    const redirectUrl = window.location.origin;
+                    
+                    console.log('Sending reset email to:', email);
+                    console.log('Redirect URL:', redirectUrl);
+                    
+                    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: redirectUrl
+                    });
+
+                    if (error) throw error;
+
+                    showMessage('forgotPasswordMessage', 
+                        '✅ Password reset link sent! Check your email (including spam folder).', 
+                        'success'
+                    );
+                    
+                    document.getElementById('forgotPasswordForm').reset();
+                    
+                } catch (error) {
+                    console.error('Error sending reset email:', error);
+                    showMessage('forgotPasswordMessage', 
+                        'Error sending reset link: ' + error.message, 
+                        'error'
+                    );
+                } finally {
+                    forgotBtn.disabled = false;
+                    forgotBtn.textContent = 'SEND RESET LINK';
+                }
+            });
+
+            // NEW PASSWORD
+            document.getElementById('newPasswordForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const newPasswordBtn = document.getElementById('newPasswordBtn');
+                
+                if (newPassword !== confirmPassword) {
+                    showMessage('newPasswordMessage', 'Passwords do not match', 'error');
+                    return;
+                }
+                
+                newPasswordBtn.disabled = true;
+                newPasswordBtn.textContent = 'Updating...';
+                
+                try {
+                    const { error } = await supabase.auth.updateUser({
+                        password: newPassword
+                    });
+
+                    if (error) throw error;
+
+                    showMessage('newPasswordMessage', 
+                        '✅ Password updated successfully! You can now log in with your new password.', 
+                        'success'
+                    );
+                    
+                    sessionStorage.removeItem('reset_token');
+                    document.getElementById('newPasswordForm').reset();
+                    
+                    setTimeout(() => {
+                        closeNewPasswordModal();
+                        openLoginModal();
+                    }, 3000);
+                    
+                } catch (error) {
+                    showMessage('newPasswordMessage', 
+                        'Error updating password: ' + error.message, 
+                        'error'
+                    );
+                } finally {
+                    newPasswordBtn.disabled = false;
+                    newPasswordBtn.textContent = 'UPDATE PASSWORD';
+                }
+            });
+        }
 
         // Modal functions
         function openSignupModal() {
@@ -688,14 +899,12 @@
         function checkPasswordReset() {
             console.log('🔍 Checking for password reset token...');
             
-            // Preveri URL parameters (ker Supabase pošlje redirect)
             const urlParams = new URLSearchParams(window.location.search);
             const type = urlParams.get('type');
             const token = urlParams.get('token');
             
             console.log('URL Search Params:', { type, token });
             
-            // Preveri tudi hash del (za vsak slučaj)
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             const hashType = hashParams.get('type');
             const access_token = hashParams.get('access_token');
@@ -709,12 +918,10 @@
                 sessionStorage.setItem('reset_token', resetToken);
                 openNewPasswordModal();
                 
-                // Počisti URL brez reloada
                 window.history.replaceState({}, document.title, window.location.pathname);
                 return true;
             }
             
-            // Preveri sessionStorage za obstoječi token
             const storedToken = sessionStorage.getItem('reset_token');
             if (storedToken) {
                 console.log('✅ Stored reset token found!');
@@ -725,215 +932,11 @@
             return false;
         }
 
-        // SUPABASE SIGNUP
-        document.getElementById('signupForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const fullName = document.getElementById('fullName').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const signupBtn = document.getElementById('signupBtn');
-            
-            signupBtn.disabled = true;
-            signupBtn.textContent = 'Creating Account...';
-            
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            full_name: fullName
-                        },
-                        emailRedirectTo: window.location.origin
-                    }
-                });
-
-                if (error) throw error;
-
-                if (data.user) {
-                    if (data.user.identities && data.user.identities.length === 0) {
-                        showMessage('signupMessage', 
-                            'Account already exists with this email. Please log in instead.', 
-                            'error'
-                        );
-                    } else if (data.user.confirmed_at) {
-                        showMessage('signupMessage', 
-                            'Account created and email verified! You can now log in.', 
-                            'success'
-                        );
-                    } else {
-                        showMessage('signupMessage', 
-                            '🎉 Account created! Please check your email (including spam folder) for verification link.', 
-                            'success'
-                        );
-                    }
-                    
-                    document.getElementById('signupForm').reset();
-                }
-                
-            } catch (error) {
-                let errorMessage = 'Error creating account. ';
-                
-                if (error.message.includes('already registered')) {
-                    errorMessage += 'Email already exists. Please log in.';
-                } else if (error.message.includes('Invalid email')) {
-                    errorMessage += 'Invalid email address.';
-                } else if (error.message.includes('Password')) {
-                    errorMessage += 'Password should be at least 6 characters.';
-                } else {
-                    errorMessage += error.message;
-                }
-                
-                showMessage('signupMessage', errorMessage, 'error');
-            } finally {
-                signupBtn.disabled = false;
-                signupBtn.textContent = 'CREATE ACCOUNT';
-            }
-        });
-
-        // SUPABASE LOGIN
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
-            
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) throw error;
-
-                if (data.user) {
-                    showMessage('loginMessage', '✅ Login successful! Redirecting...', 'success');
-                    setTimeout(() => {
-                        closeLoginModal();
-                        // window.location.href = '/dashboard.html';
-                    }, 2000);
-                }
-                
-            } catch (error) {
-                let errorMessage = 'Login failed. ';
-                if (error.message.includes('Invalid login credentials')) {
-                    errorMessage += 'Invalid email or password.';
-                } else if (error.message.includes('Email not confirmed')) {
-                    errorMessage += 'Please verify your email address first.';
-                } else {
-                    errorMessage += error.message;
-                }
-                showMessage('loginMessage', errorMessage, 'error');
-            } finally {
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'LOG IN';
-            }
-        });
-
-        // POPRAVLJENA FORGOT PASSWORD
-        document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('forgotEmail').value;
-            const forgotBtn = document.getElementById('forgotPasswordBtn');
-            
-            forgotBtn.disabled = true;
-            forgotBtn.textContent = 'Sending...';
-            
-            try {
-                // Uporabi trenutno domeno za redirect
-                const redirectUrl = window.location.origin;
-                
-                console.log('Sending reset email to:', email);
-                console.log('Redirect URL:', redirectUrl);
-                
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: redirectUrl
-                });
-
-                if (error) throw error;
-
-                showMessage('forgotPasswordMessage', 
-                    '✅ Password reset link sent! Check your email (including spam folder).', 
-                    'success'
-                );
-                
-                document.getElementById('forgotPasswordForm').reset();
-                
-            } catch (error) {
-                console.error('Error sending reset email:', error);
-                showMessage('forgotPasswordMessage', 
-                    'Error sending reset link: ' + error.message, 
-                    'error'
-                );
-            } finally {
-                forgotBtn.disabled = false;
-                forgotBtn.textContent = 'SEND RESET LINK';
-            }
-        });
-
-        // NEW PASSWORD
-        document.getElementById('newPasswordForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const newPasswordBtn = document.getElementById('newPasswordBtn');
-            
-            if (newPassword !== confirmPassword) {
-                showMessage('newPasswordMessage', 'Passwords do not match', 'error');
-                return;
-            }
-            
-            newPasswordBtn.disabled = true;
-            newPasswordBtn.textContent = 'Updating...';
-            
-            try {
-                const { error } = await supabase.auth.updateUser({
-                    password: newPassword
-                });
-
-                if (error) throw error;
-
-                showMessage('newPasswordMessage', 
-                    '✅ Password updated successfully! You can now log in with your new password.', 
-                    'success'
-                );
-                
-                sessionStorage.removeItem('reset_token');
-                document.getElementById('newPasswordForm').reset();
-                
-                setTimeout(() => {
-                    closeNewPasswordModal();
-                    openLoginModal();
-                }, 3000);
-                
-            } catch (error) {
-                showMessage('newPasswordMessage', 
-                    'Error updating password: ' + error.message, 
-                    'error'
-                );
-            } finally {
-                newPasswordBtn.disabled = false;
-                newPasswordBtn.textContent = 'UPDATE PASSWORD';
-            }
-        });
-
-        // POPRAVLJEN INITIALIZATION
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 DOM loaded, checking for password reset...');
+            console.log('🚀 DOM loaded, initializing Supabase...');
+            initializeSupabase();
             
-            // Takoj preveri za password reset
-            setTimeout(() => {
-                checkPasswordReset();
-            }, 100);
-            
-            // Animation for feature cards
             const cards = document.querySelectorAll('.feature-card');
             cards.forEach((card, index) => {
                 setTimeout(() => {
@@ -943,7 +946,6 @@
             });
         });
 
-        // Dodatno preverjanje ko se spremeni URL
         window.addEventListener('hashchange', function() {
             console.log('🔗 Hash changed, checking for password reset...');
             setTimeout(() => {
@@ -956,15 +958,6 @@
             setTimeout(() => {
                 checkPasswordReset();
             }, 200);
-        });
-
-        // Auth state listener
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('🔐 Auth state changed:', event);
-            if (event === 'PASSWORD_RECOVERY') {
-                console.log('🔄 Password recovery event detected!');
-                openNewPasswordModal();
-            }
         });
     </script>
 </body>
