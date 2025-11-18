@@ -615,7 +615,6 @@
         const supabaseUrl = 'https://mdvczbswbwbghschjthq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kdmN6YnN3YndiZ2hzY2hqdGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTcwNzIsImV4cCI6MjA3ODc3MzA3Mn0.LhiKgP0EWAANGJK7ocN8rbTBmEFttgTsCqwEzHzbezk';
         
-        // Počakaj, da se Supabase SDK naloži
         let supabase;
         
         function initializeSupabase() {
@@ -651,7 +650,7 @@
                             data: {
                                 full_name: fullName
                             },
-                            emailRedirectTo: window.location.origin
+                            emailRedirectTo: window.location.origin + window.location.pathname
                         }
                     });
 
@@ -740,7 +739,7 @@
                 }
             });
 
-            // POPRAVLJENA FORGOT PASSWORD
+            // POPRAVLJENA FORGOT PASSWORD - Deluje z GitHub Pages
             document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -751,7 +750,7 @@
                 forgotBtn.textContent = 'Sending...';
                 
                 try {
-                    const redirectUrl = window.location.origin;
+                    const redirectUrl = window.location.origin + window.location.pathname;
                     
                     console.log('Sending reset email to:', email);
                     console.log('Redirect URL:', redirectUrl);
@@ -895,33 +894,47 @@
             }
         }
 
-        // POPRAVLJENA FUNKCIJA - Check if URL has password reset token
+        // POPRAVLJENA FUNKCIJA - Deluje z GitHub Pages
         function checkPasswordReset() {
             console.log('🔍 Checking for password reset token...');
             
+            // Preveri URL parameters (deluje bolje z GitHub Pages)
             const urlParams = new URLSearchParams(window.location.search);
             const type = urlParams.get('type');
-            const token = urlParams.get('token');
+            const access_token = urlParams.get('access_token');
             
-            console.log('URL Search Params:', { type, token });
+            console.log('URL Search Params:', { type, access_token });
             
-            const hashParams = new URLSearchParams(window.location.hash.substring(1));
-            const hashType = hashParams.get('type');
-            const access_token = hashParams.get('access_token');
-            
-            console.log('URL Hash Params:', { hashType, access_token });
-            
-            if ((type === 'recovery' && token) || (hashType === 'recovery' && access_token)) {
-                console.log('✅ Password reset token found!');
-                
-                const resetToken = token || access_token;
-                sessionStorage.setItem('reset_token', resetToken);
+            if (type === 'recovery' && access_token) {
+                console.log('✅ Password reset token found in URL params!');
+                sessionStorage.setItem('reset_token', access_token);
                 openNewPasswordModal();
                 
-                window.history.replaceState({}, document.title, window.location.pathname);
+                // Počisti URL brez reloada - POMEMBNO za GitHub Pages
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
                 return true;
             }
             
+            // Preveri tudi hash del (za vsak slučaj)
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const hashType = hashParams.get('type');
+            const hashAccessToken = hashParams.get('access_token');
+            
+            console.log('URL Hash Params:', { hashType, hashAccessToken });
+            
+            if (hashType === 'recovery' && hashAccessToken) {
+                console.log('✅ Password reset token found in hash!');
+                sessionStorage.setItem('reset_token', hashAccessToken);
+                openNewPasswordModal();
+                
+                // Počisti hash brez reloada
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
+                return true;
+            }
+            
+            // Preveri sessionStorage
             const storedToken = sessionStorage.getItem('reset_token');
             if (storedToken) {
                 console.log('✅ Stored reset token found!');
