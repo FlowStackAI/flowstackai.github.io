@@ -976,14 +976,26 @@ function checkPasswordReset() {
             checkPasswordReset();
         }, 50);
 
-        // Auth state listener
-        supabase.auth.onAuthStateChange((event, session) => {
-            console.log('🔐 Auth state changed:', event);
-            if (event === 'PASSWORD_RECOVERY') {
-                console.log('🔄 Password recovery event detected!');
+       // Auth state listener - POPRAVLJEN
+supabase.auth.onAuthStateChange((event, session) => {
+    console.log('🔐 Auth state changed:', event);
+    console.log('📍 Current URL:', window.location.href);
+    
+    if (event === 'PASSWORD_RECOVERY') {
+        console.log('🔄 Password recovery event detected!');
+        openNewPasswordModal();
+    }
+    else if (event === 'SIGNED_IN') {
+        console.log('✅ User signed in - checking URL for password reset...');
+        // Preveri če je to password reset sign-in
+        if (window.location.hash && window.location.hash.includes('type=recovery')) {
+            console.log('🎯 Password reset sign-in detected! Opening modal...');
+            setTimeout(() => {
                 openNewPasswordModal();
-            }
-        });
+            }, 500);
+        }
+    }
+});
     </script>
 </body>
 </html>
