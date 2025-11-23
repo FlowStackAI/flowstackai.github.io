@@ -687,67 +687,47 @@
             }
         }
 
-      // POPRAVLJENA FUNKCIJA - z ročnim parsanjem hash-a
-function checkPasswordReset() {
-    console.log('🎯 ULTRA CHECK - Starting password reset detection...');
-    console.log('📍 Full URL:', window.location.href);
-    console.log('📍 Hash:', window.location.hash);
-    
-    // 1. Preveri HASH del z ROČNIM parsanjem
-    if (window.location.hash) {
-        console.log('🔍 Checking hash with MANUAL parsing...');
-        
-        // Ročno parsaj hash (URLSearchParams včasih ne dela)
-        const hash = window.location.hash.substring(1);
-        console.log('📋 Raw hash:', hash);
-        
-        // Razdeli hash na parametre
-        const params = {};
-        hash.split('&').forEach(pair => {
-            const [key, value] = pair.split('=');
-            params[key] = value;
-        });
-        
-        console.log('📋 Manual parsed params:', params);
-        
-        const type = params['type'];
-        const access_token = params['access_token'];
-        
-        console.log('📋 Manual check - type:', type, 'access_token:', access_token ? 'PRESENT' : 'MISSING');
-        
-        if (type === 'recovery' && access_token) {
-            console.log('🎉 SUCCESS: Password reset token FOUND with manual parsing!');
-            sessionStorage.setItem('reset_token', access_token);
+        // FORCE PASSWORD RESET DETECTION
+        function forcePasswordResetDetection() {
+            console.log('🔍 FORCE DETECTION - Checking URL...');
+            console.log('📍 Full URL:', window.location.href);
+            console.log('📍 Hash:', window.location.hash);
             
-            // Takoj odpri modal
-            setTimeout(() => {
-                console.log('🚀 Opening password reset modal...');
-                openNewPasswordModal();
-            }, 300);
-            
-            // Počisti URL
-            setTimeout(() => {
-                window.history.replaceState({}, document.title, window.location.pathname);
-                console.log('🧹 URL cleaned');
-            }, 1000);
-            
-            return true;
+            // Preveri hash za password reset
+            if (window.location.hash && window.location.hash.includes('type=recovery')) {
+                console.log('🎯 FORCE DETECTION: Password reset URL detected!');
+                
+                // Ročno parsaj hash
+                const hash = window.location.hash.substring(1);
+                const params = {};
+                hash.split('&').forEach(pair => {
+                    const [key, value] = pair.split('=');
+                    params[key] = value;
+                });
+                
+                const access_token = params['access_token'];
+                if (access_token) {
+                    console.log('🎯 FORCE DETECTION: Token found, opening modal!');
+                    sessionStorage.setItem('reset_token', access_token);
+                    
+                    // Takoj odpri modal
+                    setTimeout(() => {
+                        openNewPasswordModal();
+                        console.log('🚀 Modal opened via force detection!');
+                    }, 1000);
+                    
+                    // Počisti URL
+                    setTimeout(() => {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                        console.log('🧹 URL cleaned');
+                    }, 2000);
+                    
+                    return true;
+                }
+            }
+            return false;
         }
-    }
-    
-    // 2. Preveri tudi sessionStorage
-    const storedToken = sessionStorage.getItem('reset_token');
-    if (storedToken) {
-        console.log('🎉 SUCCESS: Stored reset token found!');
-        setTimeout(() => {
-            openNewPasswordModal();
-        }, 300);
-        return true;
-    }
-    
-    console.log('❌ No password reset token found');
-    return false;
-}
+
         // SUPABASE SIGNUP
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -949,7 +929,7 @@ function checkPasswordReset() {
             
             // Check for password reset - TAKOJ
             setTimeout(() => {
-                checkPasswordReset();
+                forcePasswordResetDetection();
             }, 100);
             
             // Animation for feature cards
@@ -966,36 +946,28 @@ function checkPasswordReset() {
         window.addEventListener('hashchange', function() {
             console.log('🔗 Hash changed, checking for password reset...');
             setTimeout(() => {
-                checkPasswordReset();
+                forcePasswordResetDetection();
             }, 100);
         });
 
         // Preveri takoj ko se stran naloži (še preden je DOM ready)
         console.log('📄 Script loaded, checking URL immediately...');
         setTimeout(() => {
-            checkPasswordReset();
+            forcePasswordResetDetection();
         }, 50);
 
-       // Auth state listener - POPRAVLJEN
-supabase.auth.onAuthStateChange((event, session) => {
-    console.log('🔐 Auth state changed:', event);
-    console.log('📍 Current URL:', window.location.href);
-    
-    if (event === 'PASSWORD_RECOVERY') {
-        console.log('🔄 Password recovery event detected!');
-        openNewPasswordModal();
-    }
-    else if (event === 'SIGNED_IN') {
-        console.log('✅ User signed in - checking URL for password reset...');
-        // Preveri če je to password reset sign-in
-        if (window.location.hash && window.location.hash.includes('type=recovery')) {
-            console.log('🎯 Password reset sign-in detected! Opening modal...');
-            setTimeout(() => {
-                openNewPasswordModal();
-            }, 500);
-        }
-    }
-});
+        // Auth state listener - POPRAVLJEN
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('🔐 Auth state changed:', event);
+            
+            if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+                console.log('🔄 Auth event that might be password reset:', event);
+                // Vedno preveri za password reset
+                setTimeout(() => {
+                    forcePasswordResetDetection();
+                }, 500);
+            }
+        });
     </script>
 </body>
 </html>
