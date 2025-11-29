@@ -611,15 +611,14 @@
         </div>
     </div>
 
-   <script>
+  <script>
     // SUPABASE CONFIGURATION
     const supabaseUrl = 'https://mdvczbswbwbghschjthq.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kdmN6YnN3YndiZ2hzY2hqdGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTcwNzIsImV4cCI6MjA3ODc3MzA3Mn0.LhiKgP0EWAANGJK7ocN8rbTBmEFttgTsCqwEzHzbezk';
     
-    // Initialize Supabase
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Modal functions
+    // Modal functions (ostanejo enake)
     function openSignupModal() {
         closeAllModals();
         document.getElementById('signupModal').style.display = 'flex';
@@ -681,33 +680,17 @@
         }
     }
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        if (event.target.classList.contains('modal')) {
-            closeAllModals();
-        }
-    }
-
-    // FIXED PASSWORD RESET DETECTION
+    // ULTIMATE PASSWORD RESET SOLUTION
     function handlePasswordReset() {
-        console.log('=== PASSWORD RESET CHECK ===');
+        console.log('=== ULTIMATE PASSWORD RESET CHECK ===');
         console.log('Full URL:', window.location.href);
         console.log('Hash:', window.location.hash);
         
-        // Preveri ali smo že obdelali password reset (prepreči ponavljanje)
-        if (sessionStorage.getItem('password_reset_handled') === 'true') {
-            console.log('Password reset already handled, skipping...');
-            return false;
-        }
-        
-        // Scenario 1: Veljaven password reset URL
-        if (window.location.hash && window.location.hash.includes('type=recovery')) {
-            console.log('🎯 VALID PASSWORD RESET DETECTED');
+        // EMERGENCY CHECK - če vidimo password reset URL, takoj odpri modal
+        if (window.location.hash.includes('type=recovery')) {
+            console.log('🚨 EMERGENCY: Password reset detected!');
             
-            // Označi kot obdelano
-            sessionStorage.setItem('password_reset_handled', 'true');
-            
-            // Parse hash parameters
+            // Parse token
             const hashParams = {};
             window.location.hash.substring(1).split('&').forEach(pair => {
                 const [key, value] = pair.split('=');
@@ -717,50 +700,42 @@
             const access_token = hashParams['access_token'];
             if (access_token) {
                 sessionStorage.setItem('reset_token', access_token);
-                console.log('Token stored:', access_token);
+                console.log('Token stored');
             }
             
-            // Odpri modal takoj
-            console.log('Opening new password modal...');
+            // Takoj odpri modal
+            console.log('Opening new password modal immediately...');
             openNewPasswordModal();
             
-            // Počisti URL
+            // Hitro počisti URL
             setTimeout(() => {
                 window.history.replaceState({}, document.title, window.location.pathname);
                 console.log('URL cleaned');
-            }, 1000);
+            }, 500);
             
             return true;
         }
         
-        // Scenario 2: Potekel password reset URL
-        if (window.location.hash && window.location.hash.includes('error=access_denied')) {
-            console.log('❌ EXPIRED PASSWORD RESET LINK DETECTED');
-            
-            // Označi kot obdelano
-            sessionStorage.setItem('password_reset_handled', 'true');
-            
-            // Odpri forgot password modal z napako
+        // Check for expired link
+        if (window.location.hash.includes('error=access_denied')) {
+            console.log('❌ Expired password reset link');
             openForgotPasswordModal();
             showMessage('forgotPasswordMessage', 
-                '❌ Your password reset link has expired or is invalid. Please request a new one below.', 
+                '❌ Your password reset link has expired. Please request a new one.', 
                 'error'
             );
             
-            // Počisti URL
             setTimeout(() => {
                 window.history.replaceState({}, document.title, window.location.pathname);
-                console.log('URL cleaned after error');
-            }, 1000);
+            }, 500);
             
             return true;
         }
         
-        console.log('No password reset scenario detected');
         return false;
     }
 
-    // SUPABASE SIGNUP
+    // SUPABASE AUTH FUNCTIONS
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -777,10 +752,8 @@
                 email: email,
                 password: password,
                 options: {
-                    data: {
-                        full_name: fullName
-                    },
-                    emailRedirectTo: 'https://flowstackai.github.io'
+                    data: { full_name: fullName },
+                    emailRedirectTo: 'https://flowstackai.github.io/flowstack/'
                 }
             });
 
@@ -788,46 +761,23 @@
 
             if (data.user) {
                 if (data.user.identities && data.user.identities.length === 0) {
-                    showMessage('signupMessage', 
-                        'Account already exists with this email. Please log in instead.', 
-                        'error'
-                    );
+                    showMessage('signupMessage', 'Account already exists. Please log in.', 'error');
                 } else if (data.user.confirmed_at) {
-                    showMessage('signupMessage', 
-                        'Account created and email verified! You can now log in.', 
-                        'success'
-                    );
+                    showMessage('signupMessage', 'Account verified! You can log in.', 'success');
                 } else {
-                    showMessage('signupMessage', 
-                        '🎉 Account created! Please check your email (including spam folder) for verification link.', 
-                        'success'
-                    );
+                    showMessage('signupMessage', '🎉 Account created! Check email for verification.', 'success');
                 }
-                
                 document.getElementById('signupForm').reset();
             }
             
         } catch (error) {
-            let errorMessage = 'Error creating account. ';
-            
-            if (error.message.includes('already registered')) {
-                errorMessage += 'Email already exists. Please log in.';
-            } else if (error.message.includes('Invalid email')) {
-                errorMessage += 'Invalid email address.';
-            } else if (error.message.includes('Password')) {
-                errorMessage += 'Password should be at least 6 characters.';
-            } else {
-                errorMessage += error.message;
-            }
-            
-            showMessage('signupMessage', errorMessage, 'error');
+            showMessage('signupMessage', 'Error: ' + error.message, 'error');
         } finally {
             signupBtn.disabled = false;
             signupBtn.textContent = 'CREATE ACCOUNT';
         }
     });
 
-    // SUPABASE LOGIN
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -839,39 +789,22 @@
         loginBtn.textContent = 'Logging in...';
         
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
             if (error) throw error;
 
             if (data.user) {
-                showMessage('loginMessage', '✅ Login successful! Redirecting...', 'success');
-                setTimeout(() => {
-                    closeLoginModal();
-                    // Redirect to dashboard
-                    // window.location.href = '/dashboard.html';
-                }, 2000);
+                showMessage('loginMessage', '✅ Login successful!', 'success');
+                setTimeout(() => closeLoginModal(), 2000);
             }
             
         } catch (error) {
-            let errorMessage = 'Login failed. ';
-            if (error.message.includes('Invalid login credentials')) {
-                errorMessage += 'Invalid email or password.';
-            } else if (error.message.includes('Email not confirmed')) {
-                errorMessage += 'Please verify your email address first.';
-            } else {
-                errorMessage += error.message;
-            }
-            showMessage('loginMessage', errorMessage, 'error');
+            showMessage('loginMessage', 'Login failed: ' + error.message, 'error');
         } finally {
             loginBtn.disabled = false;
             loginBtn.textContent = 'LOG IN';
         }
     });
 
-    // FORGOT PASSWORD
     document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -883,30 +816,22 @@
         
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: 'https://flowstackai.github.io'
+                redirectTo: 'https://flowstackai.github.io/flowstack/'
             });
 
             if (error) throw error;
 
-            showMessage('forgotPasswordMessage', 
-                '✅ Password reset link sent! Check your email (including spam folder).', 
-                'success'
-            );
-            
+            showMessage('forgotPasswordMessage', '✅ Reset link sent! Check email.', 'success');
             document.getElementById('forgotPasswordForm').reset();
             
         } catch (error) {
-            showMessage('forgotPasswordMessage', 
-                'Error sending reset link: ' + error.message, 
-                'error'
-            );
+            showMessage('forgotPasswordMessage', 'Error: ' + error.message, 'error');
         } finally {
             forgotBtn.disabled = false;
             forgotBtn.textContent = 'SEND RESET LINK';
         }
     });
 
-    // NEW PASSWORD
     document.getElementById('newPasswordForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -923,20 +848,11 @@
         newPasswordBtn.textContent = 'Updating...';
         
         try {
-            const { error } = await supabase.auth.updateUser({
-                password: newPassword
-            });
-
+            const { error } = await supabase.auth.updateUser({ password: newPassword });
             if (error) throw error;
 
-            showMessage('newPasswordMessage', 
-                '✅ Password updated successfully! You can now log in with your new password.', 
-                'success'
-            );
-            
-            // Počisti stored token in flag
+            showMessage('newPasswordMessage', '✅ Password updated! You can now log in.', 'success');
             sessionStorage.removeItem('reset_token');
-            sessionStorage.removeItem('password_reset_handled');
             document.getElementById('newPasswordForm').reset();
             
             setTimeout(() => {
@@ -945,56 +861,47 @@
             }, 3000);
             
         } catch (error) {
-            showMessage('newPasswordMessage', 
-                'Error updating password: ' + error.message, 
-                'error'
-            );
+            showMessage('newPasswordMessage', 'Error: ' + error.message, 'error');
         } finally {
             newPasswordBtn.disabled = false;
             newPasswordBtn.textContent = 'UPDATE PASSWORD';
         }
     });
 
-    // PASSWORD RESET CHECK - IMPROVED
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 DOM loaded - checking password reset');
-        // Počisti prejšnji flag ob novem load
-        sessionStorage.removeItem('password_reset_handled');
-        handlePasswordReset();
+    // ULTIMATE PASSWORD RESET DETECTION
+    console.log('🔍 ULTIMATE PASSWORD RESET DETECTION STARTED');
+    
+    // Check immediately
+    handlePasswordReset();
+    
+    // Check multiple times with different delays
+    const delays = [50, 100, 200, 500, 1000, 2000];
+    delays.forEach(delay => {
+        setTimeout(handlePasswordReset, delay);
     });
-
-    // Check multiple times
-    setTimeout(handlePasswordReset, 100);
-    setTimeout(handlePasswordReset, 500);
-    setTimeout(handlePasswordReset, 1000);
-
-    // Check on hash change
-    window.addEventListener('hashchange', function() {
-        console.log('🔗 Hash changed - checking password reset');
-        // Počisti flag ob hash spremembi
-        sessionStorage.removeItem('password_reset_handled');
-        handlePasswordReset();
-    });
-
-    // Auth state listener - IGNORE SIGNED_IN events during password reset
+    
+    // Check on every hash change
+    window.addEventListener('hashchange', handlePasswordReset);
+    
+    // Check when page loads
+    window.addEventListener('load', handlePasswordReset);
+    document.addEventListener('DOMContentLoaded', handlePasswordReset);
+    
+    // Ignore auth state changes during password reset
     supabase.auth.onAuthStateChange((event, session) => {
-        console.log('🔐 Auth state changed:', event);
-        
-        // Ignore SIGNED_IN events if we're handling password reset
-        if (event === 'SIGNED_IN' && sessionStorage.getItem('password_reset_handled') === 'true') {
-            console.log('Ignoring SIGNED_IN event during password reset flow');
-            return;
-        }
-        
+        console.log('🔐 Auth state:', event);
         if (event === 'PASSWORD_RECOVERY') {
-            console.log('🔄 Password recovery event - checking again');
+            console.log('🔄 Password recovery - checking again');
             setTimeout(handlePasswordReset, 100);
         }
     });
 
-    // Initial check
-    console.log('🔍 Initial script load - checking password reset');
-    handlePasswordReset();
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            closeAllModals();
+        }
+    }
 </script>
 </body>
 </html>
