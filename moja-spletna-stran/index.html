@@ -753,7 +753,7 @@
                 password: password,
                 options: {
                     data: { full_name: fullName },
-                    emailRedirectTo: 'https://flowstackai.github.io/flowstack/'
+                    emailRedirectTo: 'https://flowstackai.github.io/'
                 }
             });
 
@@ -816,7 +816,7 @@
         
         try {
             const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: 'https://flowstackai.github.io/flowstack/'
+                redirectTo: 'https://flowstackai.github.io/'
             });
 
             if (error) throw error;
