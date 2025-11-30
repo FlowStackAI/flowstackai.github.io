@@ -9,7 +9,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* Tvoj CSS ostane enak */
         * {
             margin: 0;
             padding: 0;
@@ -35,6 +34,8 @@
             position: relative;
             z-index: 2;
             backdrop-filter: blur(10px);
+            /* TEST: Oznaci container */
+            border: 3px solid red !important;
         }
 
         header {
@@ -252,6 +253,10 @@
             height: 100%;
             z-index: 1;
             overflow: hidden;
+            /* DODAJ TO: */
+            pointer-events: none; /* Prepreči interakcijo */
+            /* TEST: Onemogoči video */
+            display: none !important;
         }
 
         .video-background video {
@@ -264,6 +269,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             opacity: 0.05;
+            /* DODAJ TO: */
+            object-fit: cover; /* Pravilno raztegnje video */
         }
 
         /* MODAL STYLES */
@@ -420,11 +427,14 @@
     </style>
 </head>
 <body>
+    <!-- TEST: Video je onemogočen -->
+    <!--
     <div class="video-background">
         <video autoplay muted loop>
             <source src="https://assets.mixkit.co/videos/preview/mixkit-white-flowers-1586-large.mp4" type="video/mp4">
         </video>
     </div>
+    -->
 
     <div class="container">
         <header>
@@ -612,14 +622,18 @@
     </div>
 
   <script>
+    console.log("🟢 Script started - testing functionality...");
+
     // SUPABASE CONFIGURATION
     const supabaseUrl = 'https://mdvczbswbwbghschjthq.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kdmN6YnN3YndiZ2hzY2hqdGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTcwNzIsImV4cCI6MjA3ODc3MzA3Mn0.LhiKgP0EWAANGJK7ocN8rbTBmEFttgTsCqwEzHzbezk';
     
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    console.log("🟢 Supabase initialized:", supabase);
 
-    // Modal functions (ostanejo enake)
+    // TEST: Preveri funkcije
     function openSignupModal() {
+        console.log("🟢 openSignupModal called!");
         closeAllModals();
         document.getElementById('signupModal').style.display = 'flex';
     }
@@ -682,53 +696,27 @@
 
     // ULTIMATE PASSWORD RESET SOLUTION
     function handlePasswordReset() {
-        console.log('=== ULTIMATE PASSWORD RESET CHECK ===');
+        console.log('=== PASSWORD RESET CHECK ===');
         console.log('Full URL:', window.location.href);
-        console.log('Hash:', window.location.hash);
         
-        // EMERGENCY CHECK - če vidimo password reset URL, takoj odpri modal
         if (window.location.hash.includes('type=recovery')) {
-            console.log('🚨 EMERGENCY: Password reset detected!');
-            
-            // Parse token
-            const hashParams = {};
-            window.location.hash.substring(1).split('&').forEach(pair => {
-                const [key, value] = pair.split('=');
-                hashParams[key] = value;
-            });
-            
-            const access_token = hashParams['access_token'];
-            if (access_token) {
-                sessionStorage.setItem('reset_token', access_token);
-                console.log('Token stored');
-            }
-            
-            // Takoj odpri modal
-            console.log('Opening new password modal immediately...');
+            console.log('🚨 PASSWORD RESET DETECTED!');
             openNewPasswordModal();
             
-            // Hitro počisti URL
             setTimeout(() => {
                 window.history.replaceState({}, document.title, window.location.pathname);
-                console.log('URL cleaned');
             }, 500);
-            
             return true;
         }
         
-        // Check for expired link
         if (window.location.hash.includes('error=access_denied')) {
             console.log('❌ Expired password reset link');
             openForgotPasswordModal();
-            showMessage('forgotPasswordMessage', 
-                '❌ Your password reset link has expired. Please request a new one.', 
-                'error'
-            );
+            showMessage('forgotPasswordMessage', '❌ Your password reset link has expired. Please request a new one.', 'error');
             
             setTimeout(() => {
                 window.history.replaceState({}, document.title, window.location.pathname);
             }, 500);
-            
             return true;
         }
         
@@ -868,30 +856,22 @@
         }
     });
 
-    // ULTIMATE PASSWORD RESET DETECTION
-    console.log('🔍 ULTIMATE PASSWORD RESET DETECTION STARTED');
-    
-    // Check immediately
+    // PASSWORD RESET DETECTION
+    console.log('🔍 Starting password reset detection...');
     handlePasswordReset();
     
-    // Check multiple times with different delays
     const delays = [50, 100, 200, 500, 1000, 2000];
     delays.forEach(delay => {
         setTimeout(handlePasswordReset, delay);
     });
     
-    // Check on every hash change
     window.addEventListener('hashchange', handlePasswordReset);
-    
-    // Check when page loads
     window.addEventListener('load', handlePasswordReset);
     document.addEventListener('DOMContentLoaded', handlePasswordReset);
     
-    // Ignore auth state changes during password reset
     supabase.auth.onAuthStateChange((event, session) => {
         console.log('🔐 Auth state:', event);
         if (event === 'PASSWORD_RECOVERY') {
-            console.log('🔄 Password recovery - checking again');
             setTimeout(handlePasswordReset, 100);
         }
     });
@@ -902,6 +882,8 @@
             closeAllModals();
         }
     }
-</script>
+
+    console.log("✅ All scripts loaded successfully!");
+  </script>
 </body>
 </html>
