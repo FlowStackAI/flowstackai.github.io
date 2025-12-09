@@ -4,188 +4,234 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FlowStack - Modern Income Education</title>
-
-<!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-* { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif;}
-body { background: #f0f4ff; color:#333; min-height:100vh; padding:20px; line-height:1.6; }
-.container { max-width:1000px; margin:0 auto; padding:40px 20px; background:white; border-radius:15px; box-shadow:0 20px 60px rgba(0,0,0,0.1); position:relative; z-index:2;}
-header{text-align:center; margin-bottom:40px;}
-h1{font-size:42px; color:#4a6cf7; margin-bottom:10px;}
-.subtitle{font-size:20px; opacity:0.8; color:#666;}
-.feature-card{background:#eef2ff; padding:30px; border-radius:12px; margin:20px 0; text-align:center;}
-.feature-title{font-size:20px; font-weight:bold; margin-bottom:10px; color:#4a6cf7;}
-.feature-description{font-size:14px; opacity:0.8; color:#475569;}
-.cta-button{background:#4a6cf7; color:white; padding:15px 30px; border:none; border-radius:50px; font-size:16px; cursor:pointer;}
-.cta-button:hover{opacity:0.9;}
-.modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:1000;}
-.modal-content{background:white; padding:30px; border-radius:12px; width:90%; max-width:400px; position:relative;}
-.close-modal{position:absolute; top:10px; right:15px; font-size:20px; cursor:pointer; color:#666;}
-.form-group{margin-bottom:15px;}
-.form-group label{display:block; margin-bottom:5px; font-weight:bold;}
-.form-group input{width:100%; padding:10px; border:2px solid #e2e8f0; border-radius:6px;}
-.submit-btn{width:100%; background:#4a6cf7; color:white; padding:12px; font-size:16px; border:none; border-radius:6px; cursor:pointer;}
-.submit-btn:hover{opacity:0.9;}
-.message{padding:10px; border-radius:5px; margin:10px 0; text-align:center; display:none;}
-.message.success{background:#d4edda; color:#155724; border:1px solid #c3e6cb;}
-.message.error{background:#f8d7da; color:#721c24; border:1px solid #f5c6cb;}
+  /* Enak CSS kot prej, za kratkost ga tukaj skrajšam */
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Arial',sans-serif;}
+  body{background:linear-gradient(135deg,#0f1b3a 0%,#1e3a8a 50%,#0f1b3a 100%);color:#333;min-height:100vh;padding:20px;line-height:1.6;}
+  .container{max-width:1000px;margin:0 auto;padding:40px 20px;background:rgba(255,255,255,0.95);border-radius:15px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;z-index:2;backdrop-filter:blur(10px);}
+  header{text-align:center;margin-bottom:40px;}
+  h1{font-size:42px;margin-bottom:15px;background:linear-gradient(45deg,#4a6cf7,#6a11cb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:bold;}
+  .subtitle{font-size:20px;opacity:0.8;margin-bottom:10px;color:#666;}
+  .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center;}
+  .modal-content{background:white;padding:40px;border-radius:15px;width:90%;max-width:450px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;}
+  .close-modal{position:absolute;top:15px;right:20px;font-size:24px;cursor:pointer;color:#666;}
+  .form-group{margin-bottom:20px;}
+  .form-group label{display:block;margin-bottom:8px;font-weight:bold;color:#475569;}
+  .form-group input{width:100%;padding:12px 15px;border:2px solid #e2e8f0;border-radius:8px;font-size:16px;transition:border-color 0.3s ease;}
+  .form-group input:focus{outline:none;border-color:#4a6cf7;}
+  .submit-btn{width:100%;background:linear-gradient(45deg,#4a6cf7,#6a11cb);color:white;padding:15px;font-size:16px;font-weight:bold;border:none;border-radius:8px;cursor:pointer;transition:all 0.3s ease;margin-top:10px;}
+  .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(74,108,247,0.3);}
+  .submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+  .message{padding:10px;border-radius:5px;margin:10px 0;text-align:center;display:none;}
+  .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+  .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
 </style>
 </head>
 <body>
-
 <div class="container">
-<header>
-<h1>FlowStack</h1>
-<p class="subtitle">Modern Education for Digital Income</p>
-</header>
+  <header>
+    <h1>FlowStack</h1>
+    <p class="subtitle">Modern Education for Digital Income</p>
+  </header>
 
-<div class="feature-card">
-<div class="feature-title">Proven Methods</div>
-<p class="feature-description">Learn strategies that actually work in today's digital economy, not just theory.</p>
-</div>
+  <!-- Signup Modal -->
+  <div id="signupModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeSignupModal()">&times;</span>
+      <h2>Create Your Account</h2>
+      <div id="signupMessage" class="message"></div>
+      <form id="signupForm">
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input type="text" id="fullName" name="fullName" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password (min. 6 characters)</label>
+          <input type="password" id="password" name="password" required minlength="6">
+        </div>
+        <button type="submit" class="submit-btn" id="signupBtn">CREATE ACCOUNT</button>
+      </form>
+      <div class="login-link">
+        Already have an account? <a onclick="openLoginModal()">Log in</a>
+      </div>
+    </div>
+  </div>
 
-<div class="feature-card">
-<div class="feature-title">AI-Powered Learning</div>
-<p class="feature-description">Personal AI mentor adapts to your pace and helps you master skills faster.</p>
-</div>
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+      <h2>Log In to Your Account</h2>
+      <div id="loginMessage" class="message"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" name="email" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" name="password" required>
+        </div>
+        <button type="submit" class="submit-btn" id="loginBtn">LOG IN</button>
+      </form>
+      <div class="login-link">
+        <a onclick="openForgotPasswordModal()">Forgot password?</a>
+      </div>
+      <div class="login-link">
+        Don't have an account? <a onclick="openSignupModal()">Sign up</a>
+      </div>
+    </div>
+  </div>
 
-<div class="feature-card">
-<div class="feature-title">Global Opportunities</div>
-<p class="feature-description">Skills that work regardless of your location or background.</p>
-</div>
+  <!-- Forgot Password Modal -->
+  <div id="forgotPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
+      <h2>Reset Your Password</h2>
+      <div id="forgotPasswordMessage" class="message"></div>
+      <form id="forgotPasswordForm">
+        <div class="form-group">
+          <label for="forgotEmail">Enter your email address</label>
+          <input type="email" id="forgotEmail" name="email" required>
+        </div>
+        <button type="submit" class="submit-btn" id="forgotPasswordBtn">SEND RESET LINK</button>
+      </form>
+      <div class="login-link">
+        Remember your password? <a onclick="openLoginModal()">Log in</a>
+      </div>
+    </div>
+  </div>
 
-<div class="cta-section" style="text-align:center; margin-top:30px;">
-<button class="cta-button" onclick="openSignupModal()">START YOUR JOURNEY</button>
-</div>
-</div>
-
-<!-- Signup Modal -->
-<div id="signupModal" class="modal">
-<div class="modal-content">
-<span class="close-modal" onclick="closeSignupModal()">&times;</span>
-<h2>Create Your Account</h2>
-<div id="signupMessage" class="message"></div>
-<form id="signupForm">
-<div class="form-group">
-<label for="fullName">Full Name</label>
-<input type="text" id="fullName" name="fullName" required>
-</div>
-<div class="form-group">
-<label for="email">Email Address</label>
-<input type="email" id="email" name="email" required>
-</div>
-<div class="form-group">
-<label for="password">Password</label>
-<input type="password" id="password" name="password" required minlength="6">
-</div>
-<button type="submit" class="submit-btn" id="signupBtn">CREATE ACCOUNT</button>
-</form>
-</div>
-</div>
-
-<!-- Login Modal -->
-<div id="loginModal" class="modal">
-<div class="modal-content">
-<span class="close-modal" onclick="closeLoginModal()">&times;</span>
-<h2>Log In</h2>
-<div id="loginMessage" class="message"></div>
-<form id="loginForm">
-<div class="form-group">
-<label for="loginEmail">Email</label>
-<input type="email" id="loginEmail" required>
-</div>
-<div class="form-group">
-<label for="loginPassword">Password</label>
-<input type="password" id="loginPassword" required>
-</div>
-<button type="submit" class="submit-btn" id="loginBtn">LOG IN</button>
-</form>
-</div>
-</div>
-
-<!-- Forgot Password Modal -->
-<div id="forgotPasswordModal" class="modal">
-<div class="modal-content">
-<span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
-<h2>Reset Password</h2>
-<div id="forgotPasswordMessage" class="message"></div>
-<form id="forgotPasswordForm">
-<div class="form-group">
-<label for="forgotEmail">Email</label>
-<input type="email" id="forgotEmail" required>
-</div>
-<button type="submit" class="submit-btn" id="forgotPasswordBtn">SEND RESET LINK</button>
-</form>
-</div>
+  <!-- New Password Modal -->
+  <div id="newPasswordModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeNewPasswordModal()">&times;</span>
+      <h2>Set New Password</h2>
+      <div id="newPasswordMessage" class="message"></div>
+      <form id="newPasswordForm">
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" required minlength="6">
+        </div>
+        <button type="submit" class="submit-btn" id="newPasswordBtn">UPDATE PASSWORD</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>
 const supabaseUrl = 'https://mdvczbswbwbghschjthq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kdmN6YnN3YndiZ2hzY2hqdGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTcwNzIsImV4cCI6MjA3ODc3MzA3Mn0.LhiKgP0EWAANGJK7ocN8rbTBmEFttgTsCqwEzHzbezk';
-
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-function openSignupModal(){document.getElementById('signupModal').style.display='flex';}
-function closeSignupModal(){document.getElementById('signupModal').style.display='none';}
-function openLoginModal(){document.getElementById('loginModal').style.display='flex';}
-function closeLoginModal(){document.getElementById('loginModal').style.display='none';}
-function openForgotPasswordModal(){document.getElementById('forgotPasswordModal').style.display='flex';}
-function closeForgotPasswordModal(){document.getElementById('forgotPasswordModal').style.display='none';}
+function openSignupModal(){ closeAllModals(); document.getElementById('signupModal').style.display='flex'; }
+function closeSignupModal(){ document.getElementById('signupModal').style.display='none'; }
+function openLoginModal(){ closeAllModals(); document.getElementById('loginModal').style.display='flex'; }
+function closeLoginModal(){ document.getElementById('loginModal').style.display='none'; }
+function openForgotPasswordModal(){ closeAllModals(); document.getElementById('forgotPasswordModal').style.display='flex'; }
+function closeForgotPasswordModal(){ document.getElementById('forgotPasswordModal').style.display='none'; }
+function openNewPasswordModal(){ closeAllModals(); document.getElementById('newPasswordModal').style.display='flex'; }
+function closeNewPasswordModal(){ document.getElementById('newPasswordModal').style.display='none'; }
+function closeAllModals(){ ['signupModal','loginModal','forgotPasswordModal','newPasswordModal'].forEach(id=>document.getElementById(id).style.display='none'); clearMessages(); }
+function clearMessages(){ ['signupMessage','loginMessage','forgotPasswordMessage','newPasswordMessage'].forEach(id=>{const e=document.getElementById(id); if(e)e.style.display='none';});}
+function showMessage(id,msg,type){ const e=document.getElementById(id); if(e){e.textContent=msg;e.className='message '+type;e.style.display='block';}}
 
-function showMessage(id,msg,type){
-const el=document.getElementById(id);
-el.textContent=msg;
-el.className='message '+type;
-el.style.display='block';
+// SIGNUP
+document.getElementById('signupForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const fullName=document.getElementById('fullName').value;
+  const email=document.getElementById('email').value;
+  const password=document.getElementById('password').value;
+  const btn=document.getElementById('signupBtn');
+  btn.disabled=true; btn.textContent='Creating Account...';
+  try{
+    const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:fullName},emailRedirectTo:'https://flowstackai.github.io/flowstack/'}});
+    if(error) throw error;
+    if(data.user){
+      if(data.user.confirmed_at) showMessage('signupMessage','Account verified! You can log in.','success');
+      else showMessage('signupMessage','🎉 Account created! Check email for verification.','success');
+      document.getElementById('signupForm').reset();
+    }
+  }catch(err){ showMessage('signupMessage','Error: '+err.message,'error'); }
+  finally{ btn.disabled=false; btn.textContent='CREATE ACCOUNT'; }
+});
+
+// LOGIN
+document.getElementById('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const email=document.getElementById('loginEmail').value;
+  const password=document.getElementById('loginPassword').value;
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true; btn.textContent='Logging in...';
+  try{
+    const {data,error}=await supabase.auth.signInWithPassword({email,password});
+    if(error) throw error;
+    if(data.user){ showMessage('loginMessage','✅ Login successful!','success'); setTimeout(()=>closeLoginModal(),2000); }
+  }catch(err){ showMessage('loginMessage','Login failed: '+err.message,'error'); }
+  finally{ btn.disabled=false; btn.textContent='LOG IN'; }
+});
+
+// FORGOT PASSWORD
+document.getElementById('forgotPasswordForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const email=document.getElementById('forgotEmail').value;
+  const btn=document.getElementById('forgotPasswordBtn');
+  btn.disabled=true; btn.textContent='Sending...';
+  try{
+    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:'https://flowstackai.github.io/flowstack/'});
+    if(error) throw error;
+    showMessage('forgotPasswordMessage','✅ Reset link sent! Check email.','success');
+    document.getElementById('forgotPasswordForm').reset();
+  }catch(err){ showMessage('forgotPasswordMessage','Error: '+err.message,'error'); }
+  finally{ btn.disabled=false; btn.textContent='SEND RESET LINK'; }
+});
+
+// NEW PASSWORD
+document.getElementById('newPasswordForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const newPassword=document.getElementById('newPassword').value;
+  const confirmPassword=document.getElementById('confirmPassword').value;
+  const btn=document.getElementById('newPasswordBtn');
+  if(newPassword!==confirmPassword){ showMessage('newPasswordMessage','Passwords do not match','error'); return; }
+  btn.disabled=true; btn.textContent='Updating...';
+  try{
+    const token=sessionStorage.getItem('reset_token');
+    const {error}=token ? await supabase.auth.updateUser({password:newPassword}) : {error:new Error('No reset token found')};
+    if(error) throw error;
+    showMessage('newPasswordMessage','✅ Password updated! You can now log in.','success');
+    sessionStorage.removeItem('reset_token');
+    document.getElementById('newPasswordForm').reset();
+    setTimeout(()=>{ closeNewPasswordModal(); openLoginModal(); },2000);
+  }catch(err){ showMessage('newPasswordMessage','Error: '+err.message,'error'); }
+  finally{ btn.disabled=false; btn.textContent='UPDATE PASSWORD'; }
+});
+
+// HANDLE PASSWORD RESET FROM URL
+function handlePasswordReset(){
+  if(window.location.hash.includes('type=recovery')){
+    const params={};
+    window.location.hash.substring(1).split('&').forEach(pair=>{ const [k,v]=pair.split('='); params[k]=v; });
+    if(params.access_token) sessionStorage.setItem('reset_token',params.access_token);
+    openNewPasswordModal();
+    setTimeout(()=>{ window.history.replaceState({},document.title,window.location.pathname); },500);
+  }
 }
 
-document.getElementById('signupForm').addEventListener('submit', async function(e){
-e.preventDefault();
-const email=document.getElementById('email').value;
-const password=document.getElementById('password').value;
-const fullName=document.getElementById('fullName').value;
-const btn=document.getElementById('signupBtn');
-btn.disabled=true; btn.textContent='Creating...';
-try{
-const {data,error}=await supabase.auth.signUp({email,password,options:{data:{full_name:fullName},emailRedirectTo:'https://flowstackai.github.io/flowstack/'}});
-if(error) throw error;
-showMessage('signupMessage','✅ Account created. Check email for verification.','success');
-document.getElementById('signupForm').reset();
-}catch(err){showMessage('signupMessage','Error: '+err.message,'error');}finally{btn.disabled=false;btn.textContent='CREATE ACCOUNT';}
-});
+window.addEventListener('hashchange',handlePasswordReset);
+window.addEventListener('load',handlePasswordReset);
+document.addEventListener('DOMContentLoaded',handlePasswordReset);
 
-document.getElementById('loginForm').addEventListener('submit', async function(e){
-e.preventDefault();
-const email=document.getElementById('loginEmail').value;
-const password=document.getElementById('loginPassword').value;
-const btn=document.getElementById('loginBtn');
-btn.disabled=true; btn.textContent='Logging in...';
-try{
-const {data,error}=await supabase.auth.signInWithPassword({email,password});
-if(error) throw error;
-showMessage('loginMessage','✅ Login successful!','success');
-setTimeout(closeLoginModal,1500);
-}catch(err){showMessage('loginMessage','Error: '+err.message,'error');}finally{btn.disabled=false;btn.textContent='LOG IN';}
-});
-
-document.getElementById('forgotPasswordForm').addEventListener('submit', async function(e){
-e.preventDefault();
-const email=document.getElementById('forgotEmail').value;
-const btn=document.getElementById('forgotPasswordBtn');
-btn.disabled=true; btn.textContent='Sending...';
-try{
-const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:'https://flowstackai.github.io/flowstack/'});
-if(error) throw error;
-showMessage('forgotPasswordMessage','✅ Reset link sent. Check email.','success');
-document.getElementById('forgotPasswordForm').reset();
-}catch(err){showMessage('forgotPasswordMessage','Error: '+err.message,'error');}finally{btn.disabled=false;btn.textContent='SEND RESET LINK';}
-});
-
-window.onclick=function(event){
-if(event.target.classList.contains('modal')){document.querySelectorAll('.modal').forEach(m=>m.style.display='none');}
-}
+// Close modal when clicking outside
+window.onclick=function(e){ if(e.target.classList.contains('modal')) closeAllModals(); }
 </script>
 </body>
 </html>
