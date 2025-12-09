@@ -506,7 +506,7 @@
         </div>
 
         <footer>
-            <p>© 2026 FlowStack - Modern Income Education. All rights reserved.</p>
+            <p>© 2025 FlowStack - Modern Income Education. All rights reserved.</p>
         </footer>
     </div>
 
@@ -689,15 +689,9 @@
 
         // FORCE PASSWORD RESET DETECTION
         function forcePasswordResetDetection() {
-            console.log('🔍 FORCE DETECTION - Checking URL...');
-            console.log('📍 Full URL:', window.location.href);
-            console.log('📍 Hash:', window.location.hash);
-            
-            // Preveri hash za password reset
+            // Check hash for password reset
             if (window.location.hash && window.location.hash.includes('type=recovery')) {
-                console.log('🎯 FORCE DETECTION: Password reset URL detected!');
-                
-                // Ročno parsaj hash
+                // Manually parse hash
                 const hash = window.location.hash.substring(1);
                 const params = {};
                 hash.split('&').forEach(pair => {
@@ -707,19 +701,16 @@
                 
                 const access_token = params['access_token'];
                 if (access_token) {
-                    console.log('🎯 FORCE DETECTION: Token found, opening modal!');
                     sessionStorage.setItem('reset_token', access_token);
                     
-                    // Takoj odpri modal
+                    // Open modal immediately
                     setTimeout(() => {
                         openNewPasswordModal();
-                        console.log('🚀 Modal opened via force detection!');
                     }, 1000);
                     
-                    // Počisti URL
+                    // Clean URL
                     setTimeout(() => {
                         window.history.replaceState({}, document.title, window.location.pathname);
-                        console.log('🧹 URL cleaned');
                     }, 2000);
                     
                     return true;
@@ -816,12 +807,10 @@
                 if (error) throw error;
 
                 if (data.user) {
-                    showMessage('loginMessage', '✅ Login successful! Redirecting...', 'success');
+                    showMessage('loginMessage', '✅ Login successful! Redirecting to dashboard...', 'success');
                     setTimeout(() => {
-                        closeLoginModal();
-                        // Redirect to dashboard
-                        // window.location.href = '/dashboard.html';
-                    }, 2000);
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
                 }
                 
             } catch (error) {
@@ -925,9 +914,7 @@
 
         // Check auth state and password reset on load
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 DOM loaded, checking for password reset...');
-            
-            // Check for password reset - TAKOJ
+            // Check for password reset - Immediately
             setTimeout(() => {
                 forcePasswordResetDetection();
             }, 100);
@@ -942,27 +929,35 @@
             });
         });
 
-        // AVTOMATSKO PREVERJANJE - DODANO
+        // Automatic check - Added
         window.addEventListener('hashchange', function() {
-            console.log('🔗 Hash changed, checking for password reset...');
             setTimeout(() => {
                 forcePasswordResetDetection();
             }, 100);
         });
 
-        // Preveri takoj ko se stran naloži (še preden je DOM ready)
-        console.log('📄 Script loaded, checking URL immediately...');
+        // Check immediately when script loads (before DOM ready)
         setTimeout(() => {
             forcePasswordResetDetection();
         }, 50);
 
-        // Auth state listener - POPRAVLJEN
+        // Auth state listener
         supabase.auth.onAuthStateChange((event, session) => {
-            console.log('🔐 Auth state changed:', event);
-            
-            if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
-                console.log('🔄 Auth event that might be password reset:', event);
-                // Vedno preveri za password reset
+            if (event === 'SIGNED_IN') {
+                // Check if this is a password recovery flow
+                if (window.location.hash && window.location.hash.includes('type=recovery')) {
+                    // Do not redirect, let forcePasswordResetDetection handle it
+                    setTimeout(() => {
+                        forcePasswordResetDetection();
+                    }, 500);
+                } else {
+                    // Normal login or signup verification
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                }
+            } else if (event === 'PASSWORD_RECOVERY') {
                 setTimeout(() => {
                     forcePasswordResetDetection();
                 }, 500);
