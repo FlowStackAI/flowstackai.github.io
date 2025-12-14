@@ -461,6 +461,19 @@
                 <select id="langSelect" onchange="changeLanguage(this.value)">
                     <option value="en">English 🇺🇸</option>
                     <option value="sl">Slovenščina 🇸🇮</option>
+                    <option value="zh">中文 (Chinese) 🇨🇳</option>
+                    <option value="de">Deutsch (German) 🇩🇪</option>
+                    <option value="fr">Français (French) 🇫🇷</option>
+                    <option value="es">Español (Spanish) 🇪🇸</option>
+                    <option value="nl">Nederlands (Dutch) 🇳🇱</option>
+                    <option value="be">Belgian 🇧🇪</option>
+                    <option value="pt">Português (Portuguese) 🇵🇹</option>
+                    <option value="sk">Slovenčina (Slovak) 🇸🇰</option>
+                    <option value="cs">Čeština (Czech) 🇨🇿</option>
+                    <option value="ru">Русский (Russian) 🇷🇺</option>
+                    <option value="uk">Українська (Ukrainian) 🇺🇦</option>
+                    <option value="mt">Malti (Maltese) 🇲🇹</option>
+                    <option value="ar">العربية (Arabic) 🇸🇦</option>
                 </select>
             </div>
             <span id="userEmail" class="user-email"
@@ -672,7 +685,7 @@
 
         function changeLanguage(lang) {
             currentLang = lang;
-            const t = translations[lang];
+            const t = translations[lang] || translations['en'];
 
             // Update Static Elements
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -688,8 +701,8 @@
             const grid = document.getElementById('pathsGrid');
             grid.innerHTML = ''; // Clear existing
 
-            const data = contentData[currentLang];
-            const t = translations[currentLang];
+            const data = contentData[currentLang] || contentData['en'];
+            const t = translations[currentLang] || translations['en'];
 
             data.forEach(path => {
                 const card = document.createElement('div');
@@ -710,8 +723,8 @@
         function openDetails(path) {
             const overlay = document.getElementById('detailsOverlay');
             const content = document.getElementById('detailContent');
-            const t = translations[currentLang];
-            const pData = packagesData[currentLang];
+            const t = translations[currentLang] || translations['en'];
+            const pData = packagesData[currentLang] || packagesData['en'];
 
             // Build Steps HTML
             const stepsHtml = path.steps.map((step, index) => `
