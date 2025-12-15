@@ -8,18 +8,27 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        :root {
+            --primary: #4a6cf7;
+            --secondary: #6a11cb;
+            --dark-bg: #0f1b3a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Inter', 'Arial', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #0f1b3a 0%, #1e3a8a 50%, #0f1b3a 100%);
-            color: #333333;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e3a8a 50%, var(--dark-bg) 100%);
+            color: var(--text-main);
             min-height: 100vh;
-            color: white;
             overflow-x: hidden;
         }
 
@@ -31,6 +40,7 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
+            pointer-events: none;
         }
 
         .video-background video {
@@ -47,17 +57,17 @@
 
         /* Navbar */
         .navbar {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(15, 27, 58, 0.8);
             padding: 1rem 2rem;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
         }
 
         .logo {
@@ -71,31 +81,34 @@
         }
 
         .back-btn {
-            color: #ccc;
+            color: var(--text-muted);
             text-decoration: none;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: 5px;
         }
 
         .back-btn:hover {
             color: white;
+            background: rgba(255, 255, 255, 0.05);
         }
 
         /* Course Container */
         .course-container {
             display: grid;
             grid-template-columns: 1fr 350px;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
-            height: calc(100vh - 100px);
+            gap: 25px;
+            max-width: 1600px;
+            margin: 30px auto;
+            padding: 0 30px;
+            height: calc(100vh - 120px);
         }
 
-        /* Main Content (Video) */
+        /* Main Content Area */
         .main-content {
             display: flex;
             flex-direction: column;
@@ -108,12 +121,12 @@
             width: 100%;
             position: relative;
             padding-top: 56.25%;
-            /* 16:9 Aspect Ratio */
+            /* 16:9 */
             background: black;
-            border-radius: 15px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--glass-border);
         }
 
         .video-player-wrapper iframe {
@@ -136,43 +149,217 @@
             justify-content: center;
             flex-direction: column;
             color: rgba(255, 255, 255, 0.5);
-            background: #000;
+            background: radial-gradient(circle at center, #1e3a8a 0%, #000 100%);
         }
 
         .play-icon {
-            font-size: 4rem;
+            font-size: 5rem;
             margin-bottom: 1rem;
-            opacity: 0.7;
+            opacity: 0.8;
+            transition: transform 0.3s;
+            cursor: pointer;
         }
 
-        .lesson-info {
-            background: rgba(255, 255, 255, 0.05);
+        .play-icon:hover {
+            transform: scale(1.1);
+            color: var(--primary);
+        }
+
+        /* Tabs Section */
+        .tabs-container {
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .lesson-title {
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            color: white;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .tab-content {
+            padding: 30px;
+            display: none;
+            line-height: 1.7;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Lesson Text Styling */
+        .lesson-text h2 {
             font-size: 1.8rem;
-            margin-bottom: 10px;
-            background-image: linear-gradient(45deg, #4a6cf7, #6a11cb);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            color: white;
         }
 
-        .lesson-desc {
-            color: #ccc;
-            line-height: 1.6;
+        .lesson-text h3 {
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            color: #dbeafe;
         }
 
-        /* Sidebar (Syllabus) */
-        .sidebar {
+        .lesson-text p {
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .lesson-text ul {
+            margin-left: 20px;
+            margin-bottom: 1.5rem;
+        }
+
+        .lesson-text li {
+            margin-bottom: 0.5rem;
+            color: #cbd5e1;
+        }
+
+        .highlight-box {
+            background: rgba(74, 108, 247, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Tools Styling */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tool-card {
             background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .tool-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 5px;
+            color: white;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .tool-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: #3b5bdb;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -181,37 +368,25 @@
 
         .sidebar-header {
             padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--glass-border);
         }
 
-        .sidebar-header h3 {
-            font-size: 1.2rem;
-            color: white;
-            margin-bottom: 5px;
+        .progress-container {
+            margin-top: 15px;
         }
 
-        .progress-bar-container {
-            width: 100%;
+        .progress-bar {
             height: 6px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 3px;
-            margin-top: 10px;
             overflow: hidden;
         }
 
-        .progress-bar-fill {
+        .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #4a6cf7, #6a11cb);
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
             width: 0%;
-            transition: width 0.3s;
-        }
-
-        .progress-text {
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-top: 5px;
-            display: flex;
-            justify-content: space-between;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .modules-list {
@@ -221,65 +396,96 @@
         }
 
         .module {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        .module-title {
-            font-size: 0.9rem;
+        .module-header {
+            padding: 10px 15px;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            color: #888;
             letter-spacing: 1px;
-            padding: 10px;
-            font-weight: bold;
+            color: var(--text-muted);
+            font-weight: 700;
         }
 
         .lesson-item {
             display: flex;
             align-items: center;
             padding: 12px 15px;
-            margin-bottom: 5px;
-            border-radius: 8px;
+            margin: 2px 0;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid transparent;
         }
 
         .lesson-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
         }
 
         .lesson-item.active {
-            background: rgba(74, 108, 247, 0.2);
-            border-left: 3px solid #4a6cf7;
+            background: rgba(74, 108, 247, 0.15);
+            border-color: rgba(74, 108, 247, 0.3);
         }
 
-        .lesson-icon {
-            color: #aaa;
-            font-size: 0.9rem;
+        .lesson-status {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            transition: all 0.3s;
         }
 
-        .lesson-item.completed .lesson-icon {
-            color: #10b981;
+        .lesson-item.completed .lesson-status {
+            background: #10b981;
+            border-color: #10b981;
+            color: black;
         }
 
-        .lesson-item.active .lesson-icon {
-            color: #4a6cf7;
+        .lesson-item.active .lesson-status {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(74, 108, 247, 0.5);
         }
 
-        .lesson-name {
-            font-size: 0.95rem;
-            color: #e2e8f0;
+        .lesson-info {
             flex: 1;
         }
 
-        .lesson-duration {
-            font-size: 0.8rem;
-            color: #666;
+        .lesson-title {
+            font-size: 0.95rem;
+            margin-bottom: 2px;
+            color: #f1f5f9;
         }
 
-        /* Scrollbar styling */
+        .lesson-meta {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .course-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                padding-bottom: 50px;
+            }
+
+            .sidebar {
+                height: 500px;
+            }
+
+            .video-player-wrapper {
+                margin-bottom: 20px;
+            }
+        }
+
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
@@ -287,47 +493,13 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.2);
-        }
-
-        @media (max-width: 900px) {
-            .course-container {
-                grid-template-columns: 1fr;
-                height: auto;
-                padding-bottom: 40px;
-            }
-
-            .sidebar {
-                height: 500px;
-            }
-        }
-
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, #0f1b3a 0%, #1e3a8a 50%, #0f1b3a 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            z-index: 1000;
-            color: white;
-            font-weight: bold;
+            border-radius: 3px;
         }
     </style>
 </head>
 
 <body>
-    <div id="loading" class="loading">Loading Course...</div>
-
     <div class="video-background">
         <video autoplay muted loop>
             <source src="https://assets.mixkit.co/videos/preview/mixkit-white-flowers-1586-large.mp4" type="video/mp4">
@@ -338,20 +510,25 @@
     <nav class="navbar">
         <div style="display: flex; align-items: center; gap: 20px;">
             <a href="dashboard.html" class="logo">🚀 FlowStack</a>
-            <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+            <span style="opacity:0.3">|</span>
+            <a href="dashboard.html" class="back-btn">← Dashboard</a>
         </div>
-        <div style="font-weight: bold; opacity: 0.8;" id="courseTitleHeader">Course Title</div>
+        <div style="font-weight: bold; font-size: 1.1rem;" id="courseTitleHeader">Loading...</div>
         <div>
-            <!-- User avatar or simple logout could go here -->
+            <!-- Placeholder for user profile -->
+            <div
+                style="width:35px; height:35px; background:linear-gradient(45deg, #4a6cf7, #6a11cb); border-radius:50%;">
+            </div>
         </div>
     </nav>
 
-    <!-- Content -->
+    <!-- Main Container -->
     <div class="course-container">
-        <!-- Main Area -->
+
+        <!-- Left: Content Area -->
         <div class="main-content">
+            <!-- Video Player -->
             <div class="video-player-wrapper">
-                <!-- <iframe id="videoPlayer" src="" allowfullscreen></iframe> -->
                 <div id="videoPlaceholder" class="video-placeholder">
                     <div class="play-icon">▶</div>
                     <h3>Select a lesson to start</h3>
@@ -359,26 +536,92 @@
                 <iframe id="videoFrame" style="display:none;" width="100%" height="100%" src="" title="Video player"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    allowfullscreen></iframe>
             </div>
 
-            <div class="lesson-info">
-                <h1 id="lessonTitle" class="lesson-title">Welcome to the Course</h1>
-                <p id="lessonDescription" class="lesson-desc">Select a lesson from the sidebar to begin your learning
-                    journey.</p>
+            <!-- Tabs & Content -->
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-btn active" onclick="switchTab('notes')">📖 Lesson Notes</button>
+                    <button class="tab-btn" onclick="switchTab('tools')">🛠️ Builder Tools</button>
+                    <button class="tab-btn" onclick="switchTab('examples')">💡 Examples</button>
+                </div>
+
+                <!-- Tab: Notes -->
+                <div id="tab-notes" class="tab-content active lesson-text">
+                    <h2>Select a lesson</h2>
+                    <p>Detailed lesson notes, theory, and action items will appear here.</p>
+                </div>
+
+                <!-- Tab: Tools -->
+                <div id="tab-tools" class="tab-content">
+                    <div class="tools-grid">
+
+                        <!-- Tool 1: MRR Calculator -->
+                        <div class="tool-card">
+                            <div class="tool-title">💰 Freedom Calculator (MRR)</div>
+                            <div class="input-group">
+                                <label>Monthly Price ($)</label>
+                                <input type="number" id="mrr-price" value="49" oninput="calcMRR()">
+                            </div>
+                            <div class="input-group">
+                                <label>Target Monthly Income ($)</label>
+                                <input type="number" id="mrr-target" value="10000" oninput="calcMRR()">
+                            </div>
+                            <div class="tool-result" id="mrr-result">
+                                You need 204 users
+                            </div>
+                            <p style="font-size:0.8rem; color:#888; margin-top:10px;">To be free, you don't need
+                                millions. You need a small group of loyal customers.</p>
+                        </div>
+
+                        <!-- Tool 2: Idea Validator -->
+                        <div class="tool-card">
+                            <div class="tool-title">🧠 Idea Validator</div>
+                            <div class="input-group">
+                                <label>Pain Level (1-10)</label>
+                                <input type="range" min="1" max="10" value="5" id="val-pain" oninput="calcIdea()">
+                            </div>
+                            <div class="input-group">
+                                <label>Purchasing Power (1-10)</label>
+                                <input type="range" min="1" max="10" value="5" id="val-power" oninput="calcIdea()">
+                            </div>
+                            <div class="input-group">
+                                <label>Ease to Reach (1-10)</label>
+                                <input type="range" min="1" max="10" value="5" id="val-reach" oninput="calcIdea()">
+                            </div>
+                            <div class="tool-result" id="val-result">
+                                Score: 15/30
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Tab: Examples -->
+                <div id="tab-examples" class="tab-content lesson-text">
+                    <h3>Successful SaaS Examples</h3>
+                    <p>Real world examples of what is possible.</p>
+                    <div id="examples-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Right: Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <h3>Course Content</h3>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: 0%"></div>
-                </div>
-                <div class="progress-text">
-                    <span>0% Complete</span>
-                    <span id="progressFraction">0/0</span>
+                <h3>Course Syllabus</h3>
+                <div class="progress-container">
+                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
+                        <span id="progressText">0% Completed</span>
+                        <span id="progressFraction">0/0</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
 
@@ -389,34 +632,125 @@
     </div>
 
     <script>
-        // --- COURSE DATA ---
-        // Ideally this comes from a database, but we'll structure it here for the "First Course" (SaaS)
+        // --- DATA ---
 
         const courses = {
             'saas': {
                 title: 'SaaS Builder Masterclass',
+                examples: [
+                    { name: 'Buffer', desc: 'Started as a simple scheduling tool. Now worth millions.' },
+                    { name: 'Carrd', desc: 'One man builder for one-page sites. Millions in ARR.' },
+                    { name: 'PhotoAI', desc: 'Solopreneur using AI APIs to generate photos. $50k+/mo.' }
+                ],
                 modules: [
                     {
-                        title: 'Module 1: Foundations',
+                        title: 'Phase 1: The Foundation',
                         lessons: [
-                            { id: 's1-l1', title: 'What is SaaS?', duration: '5:20', videoId: 'dQw4w9WgXcQ', desc: 'Understanding the business model of Software as a Service.' }, // Rick Roll as placeholder :)
-                            { id: 's1-l2', title: 'Finding a Micro-SaaS Idea', duration: '8:45', videoId: 'dQw4w9WgXcQ', desc: 'How to find profitable niches that are not saturated.' },
-                            { id: 's1-l3', title: 'Validating Your Idea', duration: '12:10', videoId: 'dQw4w9WgXcQ', desc: 'Confirming people will pay before you build.' }
+                            {
+                                id: 'l1',
+                                title: 'What is SaaS & Why it Wins',
+                                duration: '8:24',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Defining SaaS</h3>
+                                    <p>SaaS stands for <strong>Software as a Service</strong>. Unlike traditional software that you buy once (like a CD-ROM in the 90s), SaaS is licensed on a subscription basis and is centrally hosted.</p>
+                                    <p>Think Netflix, Spotify, or Slack. You don't own the code; you pay for access.</p>
+                                    
+                                    <h3>Why it is the Holy Grail</h3>
+                                    <div class="highlight-box">
+                                        <strong>Recurring Revenue (MRR)</strong> is the key. You sell once, and get paid every month forever as long as the user stays.
+                                    </div>
+                                    <ul>
+                                        <li><strong>Scalability:</strong> Code replicates infinitely effectively for free.</li>
+                                        <li><strong>Valuation:</strong> SaaS companies sell for 5x-10x revenue multiples.</li>
+                                        <li><strong>Automation:</strong> Software works while you sleep.</li>
+                                    </ul>
+                                `
+                            },
+                            {
+                                id: 'l2',
+                                title: 'The Anatomy of a Micro-SaaS',
+                                duration: '12:10',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Micro-SaaS Explained</h3>
+                                    <p>You don't need to be the next Facebook. A <strong>Micro-SaaS</strong> solves a very specific problem for a very specific niche.</p>
+                                    <p>Example: Instead of "CRM for everyone" (Salesforce), build "CRM for Dog Walkers".</p>
+                                    
+                                    <h3>The 3 Pillars</h3>
+                                    <ol>
+                                        <li><strong>Problem:</strong> A painful, expensive, or frequent issue.</li>
+                                        <li><strong>Solution:</strong> Automated software that fixes it.</li>
+                                        <li><strong>Distribution:</strong> A way to reach the people with the problem.</li>
+                                    </ol>
+                                `
+                            },
+                            {
+                                id: 'l3',
+                                title: 'Generating Million Dollar Ideas',
+                                duration: '15:45',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Use the Calculator Tool</h3>
+                                    <p>Go to the <strong>Builder Tools</strong> tab below. Use the Idea Validator on your concepts.</p>
+                                    <h3>Research Methods</h3>
+                                    <ul>
+                                        <li><strong>App Store 1-Star Reviews:</strong> Find what people hate about existing apps. Fix it.</li>
+                                        <li><strong>Reddit Complaints:</strong> Search for "how to fix" or "alternative to".</li>
+                                        <li><strong>Manual Work:</strong> Look for businesses using Excel spreadsheets. Replace Excel with an App.</li>
+                                    </ul>
+                                `
+                            }
                         ]
                     },
                     {
-                        title: 'Module 2: Building MVP',
+                        title: 'Phase 2: Building (No Code)',
                         lessons: [
-                            { id: 's2-l1', title: 'No-Code vs Code', duration: '15:00', videoId: 'dQw4w9WgXcQ', desc: 'Choosing the right tech stack for your skills.' },
-                            { id: 's2-l2', title: 'Design Basics (UI/UX)', duration: '10:30', videoId: 'dQw4w9WgXcQ', desc: 'Making your app look professional and trustworthy.' },
-                            { id: 's2-l3', title: 'Database Structure', duration: '20:15', videoId: 'dQw4w9WgXcQ', desc: 'How to organize your data.' }
+                            {
+                                id: 'l4',
+                                title: 'The Stack: Bubble vs FlutterFlow',
+                                duration: '18:20',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <p>You do not need to be a programmer to build SaaS in 2025.</p>
+                                    <h3>Top Tools</h3>
+                                    <ul>
+                                        <li><strong>Bubble.io:</strong> Best for complex web apps (Logic heavy).</li>
+                                        <li><strong>FlutterFlow:</strong> Best for native mobile apps.</li>
+                                        <li><strong>Make.com:</strong> The glue that connects everything (Automation).</li>
+                                    </ul>
+                                `
+                            },
+                            {
+                                id: 'l5',
+                                title: 'Database Design 101',
+                                duration: '10:15',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: '<p>How to structure your User, Subscription, and Data tables effectively.</p>'
+                            }
                         ]
                     },
                     {
-                        title: 'Module 3: Launch & Scale',
+                        title: 'Phase 3: Sales & Growth',
                         lessons: [
-                            { id: 's3-l1', title: 'The Launch Checklist', duration: '6:45', videoId: 'dQw4w9WgXcQ', desc: 'Don\'t miss these critical steps before going live.' },
-                            { id: 's3-l2', title: 'Getting Your First 10 Users', duration: '14:20', videoId: 'dQw4w9WgXcQ', desc: 'Cold outreach and content marketing strategies.' }
+                            {
+                                id: 'l6',
+                                title: 'Cold DM Strategies',
+                                duration: '14:00',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>The Outreach Equation</h3>
+                                    <p>Volume x Offer x Trust = Sales.</p>
+                                    <p>Learn how to craft messages that don't feel like spam.</p>
+                                `
+                            },
+                            {
+                                id: 'l7',
+                                title: 'Viral Content for SaaS',
+                                duration: '9:30',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: '<p>Using TikTok and Reels to demo your tool and get free traffic.</p>'
+                            }
                         ]
                     }
                 ]
@@ -424,137 +758,172 @@
         };
 
         // --- STATE ---
-        let currentCourseId = 'saas'; // Default
-        let currentLessonId = null;
-        let completedLessons = []; // In a real app, load from DB
+        let currentCourseId = 'saas';
+        let currentLesson = null;
+        let completedLessons = [];
 
-        // --- SUBAPSE AUTH ---
-        const supabaseUrl = 'https://mdvczbswbwbghschjthq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1kdmN6YnN3YndiZ2hzY2hqdGhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMxOTcwNzIsImV4cCI6MjA3ODc3MzA3Mn0.LhiKgP0EWAANGJK7ocN8rbTBmEFttgTsCqwEzHzbezk';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-        async function init() {
-            // Check Auth
-            const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                window.location.href = 'index.html';
-                return;
-            }
-
-            document.getElementById('loading').style.display = 'none';
-
-            // Get Course ID from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const pathParam = urlParams.get('path');
-            if (pathParam && courses[pathParam]) {
-                currentCourseId = pathParam;
-            }
-
-            // Render Course
-            renderCourse(currentCourseId);
+        // --- INIT ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const pathParam = urlParams.get('path');
+        if (pathParam && courses[pathParam]) {
+            currentCourseId = pathParam;
         }
 
-        function renderCourse(courseId) {
-            const course = courses[courseId];
-            if (!course) return; // Handle error or show default
+        // --- FUNCTIONS ---
 
+        function renderCourse() {
+            const course = courses[currentCourseId];
+            if (!course) return;
+
+            // Title
             document.getElementById('courseTitleHeader').textContent = course.title;
-            const modulesList = document.getElementById('modulesList');
-            modulesList.innerHTML = '';
 
+            // Render Modules/Lessons
+            const list = document.getElementById('modulesList');
+            list.innerHTML = '';
             let totalLessons = 0;
 
             course.modules.forEach(mod => {
-                const modDiv = document.createElement('div');
-                modDiv.className = 'module';
+                const modEl = document.createElement('div');
+                modEl.className = 'module';
+                modEl.innerHTML = `<div class="module-header">${mod.title}</div>`;
 
-                const modTitle = document.createElement('div');
-                modTitle.className = 'module-title';
-                modTitle.textContent = mod.title;
-                modDiv.appendChild(modTitle);
-
-                mod.lessons.forEach(lesson => {
+                mod.lessons.forEach(l => {
                     totalLessons++;
-                    const lessonDiv = document.createElement('div');
-                    lessonDiv.className = 'lesson-item';
-                    lessonDiv.id = `lesson-${lesson.id}`;
-                    lessonDiv.onclick = () => loadLesson(lesson);
+                    const item = document.createElement('div');
+                    item.className = 'lesson-item';
+                    item.id = `lesson-${l.id}`;
+                    item.onclick = () => loadLesson(l);
 
-                    // Icon
-                    const icon = document.createElement('span');
-                    icon.className = 'lesson-icon';
-                    icon.innerHTML = '▶'; // Play icon default
+                    const isCompleted = completedLessons.includes(l.id);
 
-                    // Title
-                    const name = document.createElement('div');
-                    name.className = 'lesson-name';
-                    name.textContent = lesson.title;
-
-                    // Duration
-                    const dur = document.createElement('div');
-                    dur.className = 'lesson-duration';
-                    dur.textContent = lesson.duration;
-
-                    lessonDiv.appendChild(icon);
-                    lessonDiv.appendChild(name);
-                    lessonDiv.appendChild(dur);
-                    modDiv.appendChild(lessonDiv);
+                    item.innerHTML = `
+                        <div class="lesson-status">${isCompleted ? '✓' : ''}</div>
+                        <div class="lesson-info">
+                            <div class="lesson-title">${l.title}</div>
+                            <div class="lesson-meta">Video • ${l.duration}</div>
+                        </div>
+                    `;
+                    modEl.appendChild(item);
                 });
-
-                modulesList.appendChild(modDiv);
+                list.appendChild(modEl);
             });
 
-            updateProgress(totalLessons);
-        }
+            // Render Examples
+            const exList = document.getElementById('examples-list');
+            exList.innerHTML = '';
+            if (course.examples) {
+                course.examples.forEach(ex => {
+                    const exCard = document.createElement('div');
+                    exCard.className = 'highlight-box';
+                    exCard.style.marginTop = '10px';
+                    exCard.innerHTML = `<strong>${ex.name}</strong>: ${ex.desc}`;
+                    exList.appendChild(exCard);
+                });
+            }
 
-        function loadLesson(lesson) {
-            currentLessonId = lesson.id;
-
-            // Update UI Active State
-            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(`lesson-${lesson.id}`).classList.add('active');
-
-            // Update Text
-            document.getElementById('lessonTitle').textContent = lesson.title;
-            document.getElementById('lessonDescription').textContent = lesson.desc;
-
-            // Update Video
-            // Using YouTube embed for the placeholder videoId
-            const videoPlaceholder = document.getElementById('videoPlaceholder');
-            const videoFrame = document.getElementById('videoFrame');
-
-            videoPlaceholder.style.display = 'none';
-            videoFrame.style.display = 'block';
-            videoFrame.src = `https://www.youtube.com/embed/${lesson.videoId}?autoplay=1`;
-
-            // Mark as complete (simulation)
-            if (!completedLessons.includes(lesson.id)) {
-                completedLessons.push(lesson.id);
-                // Update icon to checkmark
-                const icon = document.querySelector(`#lesson-${lesson.id} .lesson-icon`);
-                icon.textContent = '✓';
-                document.getElementById(`lesson-${lesson.id}`).classList.add('completed');
-
-                // Update progress bar
-                // Recalculate based on total lessons in DOM
-                const total = document.querySelectorAll('.lesson-item').length;
-                updateProgress(total);
+            // Load first lesson if none selected
+            if (!currentLesson && course.modules[0]?.lessons[0]) {
+                loadLesson(course.modules[0].lessons[0]);
             }
         }
 
-        function updateProgress(total) {
-            const completed = completedLessons.length;
-            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+        function loadLesson(lesson) {
+            currentLesson = lesson;
 
-            document.querySelector('.progress-bar-fill').style.width = `${percentage}%`;
-            document.querySelector('.progress-text').innerHTML = `
-                <span>${percentage}% Complete</span>
-                <span>${completed}/${total}</span>
-             `;
+            // Update Sidebar UI
+            document.querySelectorAll('.lesson-item').forEach(el => el.classList.remove('active'));
+            const activeEl = document.getElementById(`lesson-${lesson.id}`);
+            if (activeEl) activeEl.classList.add('active');
+
+            // Update Video
+            const ph = document.getElementById('videoPlaceholder');
+            const vf = document.getElementById('videoFrame');
+            ph.style.display = 'none';
+            vf.style.display = 'block';
+            vf.src = `https://www.youtube.com/embed/${lesson.videoId}?rel=0`;
+
+            // Update Notes Tab
+            document.getElementById('tab-notes').innerHTML = `
+                <h2>${lesson.title}</h2>
+                ${lesson.desc}
+            `;
+
+            // Mark as Complete
+            if (!completedLessons.includes(lesson.id)) {
+                completedLessons.push(lesson.id);
+                // Update UI visually without full re-render
+                if (activeEl) {
+                    activeEl.classList.add('completed');
+                    activeEl.querySelector('.lesson-status').textContent = '✓';
+                }
+                updateProgress();
+            }
         }
 
-        // Start
-        init();
+        function updateProgress() {
+            // Count total lessons
+            let total = 0;
+            courses[currentCourseId].modules.forEach(m => total += m.lessons.length);
+
+            const done = completedLessons.length;
+            const pct = Math.round((done / total) * 100);
+
+            document.querySelector('.progress-fill').style.width = `${pct}%`;
+            document.getElementById('progressText').textContent = `${pct}% Completed`;
+            document.getElementById('progressFraction').textContent = `${done}/${total}`;
+        }
+
+        function switchTab(tabName) {
+            // Buttons
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // --- CALCULATORS ---
+        function calcMRR() {
+            const price = parseFloat(document.getElementById('mrr-price').value) || 0;
+            const target = parseFloat(document.getElementById('mrr-target').value) || 0;
+            const result = document.getElementById('mrr-result');
+
+            if (price === 0) {
+                result.textContent = 'Price cannot be 0';
+                return;
+            }
+
+            const users = Math.ceil(target / price);
+            result.textContent = `You need ${users} users to reach freedom.`;
+        }
+
+        function calcIdea() {
+            const pain = parseInt(document.getElementById('val-pain').value);
+            const power = parseInt(document.getElementById('val-power').value);
+            const reach = parseInt(document.getElementById('val-reach').value);
+
+            const score = pain + power + reach;
+            const res = document.getElementById('val-result');
+
+            let verdict = '';
+            if (score > 25) verdict = '🚀 Unicorn Potential';
+            else if (score > 20) verdict = '✅ Solid Business';
+            else if (score > 15) verdict = '⚠️ Hard Work';
+            else verdict = '❌ Rethink Idea';
+
+            res.textContent = `Score: ${score}/30 - ${verdict}`;
+
+            // Color code
+            if (score > 20) res.style.color = '#10b981'; // Green
+            else if (score > 15) res.style.color = '#f59e0b'; // Orange
+            else res.style.color = '#ef4444'; // Red
+        }
+
+        // Run
+        calcMRR(); // Init calc
+        renderCourse();
 
     </script>
 </body>
