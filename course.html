@@ -636,7 +636,7 @@
 
         const courses = {
             'saas': {
-                title: 'SaaS Builder Masterclass',
+                title: 'SaaS ESCAPE',
                 examples: [
                     { name: 'Buffer', desc: 'Started as a simple scheduling tool. Now worth millions.' },
                     { name: 'Carrd', desc: 'One man builder for one-page sites. Millions in ARR.' },
@@ -644,112 +644,226 @@
                 ],
                 modules: [
                     {
-                        title: 'Phase 1: The Foundation',
+                        title: 'MODUL 1: SaaS FOUNDATIONS',
                         lessons: [
                             {
-                                id: 'l1',
-                                title: 'What is SaaS & Why it Wins',
-                                duration: '8:24',
+                                id: 'm1-l1',
+                                title: '1.1 Kaj je SaaS',
+                                duration: '15:00',
                                 videoId: 'dQw4w9WgXcQ',
                                 desc: `
-                                    <h3>Defining SaaS</h3>
-                                    <p>SaaS stands for <strong>Software as a Service</strong>. Unlike traditional software that you buy once (like a CD-ROM in the 90s), SaaS is licensed on a subscription basis and is centrally hosted.</p>
-                                    <p>Think Netflix, Spotify, or Slack. You don't own the code; you pay for access.</p>
+                                    <h3>Lekcija: Razumevanje SaaS-a</h3>
+                                    <p>SaaS pomeni <strong>Software as a Service</strong>. To ni ime za aplikacijo, temveč način, kako se programska oprema ponuja in uporablja.</p>
                                     
-                                    <h3>Why it is the Holy Grail</h3>
+                                    <h3>Ključne lastnosti SaaS-a</h3>
+                                    <ul>
+                                        <li>Dostop prek brskalnika ali aplikacije</li>
+                                        <li>Naročniški model (plačuješ mesečno ali letno)</li>
+                                        <li>Centralno upravljanje in stalne posodobitve</li>
+                                        <li>Uporabnik ne kupi izdelka, ampak dostop</li>
+                                    </ul>
+
+                                    <h3>SaaS NI:</h3>
+                                    <ul>
+                                        <li>Enkratna prodaja</li>
+                                        <li>Offline program</li>
+                                        <li>“Naredi in pozabi” produkt</li>
+                                    </ul>
+
                                     <div class="highlight-box">
-                                        <strong>Recurring Revenue (MRR)</strong> is the key. You sell once, and get paid every month forever as long as the user stays.
+                                        <strong>Pomembna misel:</strong> SaaS ni tehnologija. SaaS je poslovni model, ki uporablja tehnologijo.
                                     </div>
-                                    <ul>
-                                        <li><strong>Scalability:</strong> Code replicates infinitely effectively for free.</li>
-                                        <li><strong>Valuation:</strong> SaaS companies sell for 5x-10x revenue multiples.</li>
-                                        <li><strong>Automation:</strong> Software works while you sleep.</li>
-                                    </ul>
+
+                                    <h3>Action Step</h3>
+                                    <p>Zapiši 3 SaaS produkte, ki jih trenutno uporabljaš, in razmisli, zakaj jih še vedno plačuješ.</p>
                                 `
                             },
                             {
-                                id: 'l2',
-                                title: 'The Anatomy of a Micro-SaaS',
-                                duration: '12:10',
+                                id: 'm1-l2',
+                                title: '1.2 Zakaj je SaaS tako močan',
+                                duration: '15:00',
                                 videoId: 'dQw4w9WgXcQ',
                                 desc: `
-                                    <h3>Micro-SaaS Explained</h3>
-                                    <p>You don't need to be the next Facebook. A <strong>Micro-SaaS</strong> solves a very specific problem for a very specific niche.</p>
-                                    <p>Example: Instead of "CRM for everyone" (Salesforce), build "CRM for Dog Walkers".</p>
+                                    <h3>Lekcija: Ekonomija naročnin</h3>
+                                    <p>Glavna moč SaaS-a ni v aplikaciji, ampak v ponavljajočem prihodku (Recurring Revenue).</p>
                                     
-                                    <h3>The 3 Pillars</h3>
-                                    <ol>
-                                        <li><strong>Problem:</strong> A painful, expensive, or frequent issue.</li>
-                                        <li><strong>Solution:</strong> Automated software that fixes it.</li>
-                                        <li><strong>Distribution:</strong> A way to reach the people with the problem.</li>
-                                    </ol>
+                                    <h3>Zakaj je recurring revenue pomemben?</h3>
+                                    <ul>
+                                        <li>Predvidljivost in stabilnost</li>
+                                        <li>Lažje planiranje rasti</li>
+                                        <li>Višje valuacije podjetja</li>
+                                    </ul>
+
+                                    <div class="highlight-box">
+                                        Primer: 100 uporabnikov x 20 € = 2.000 € MRR (Monthly Recurring Revenue).
+                                    </div>
+
+                                    <h3>Skalabilnost</h3>
+                                    <p>Enkrat zgradiš sistem, uporablja ga lahko 10 ali 10.000 ljudi. Stroški ne rastejo enako hitro kot prihodki.</p>
+
+                                    <h3>Action Step</h3>
+                                    <p>Izračunaj, koliko uporabnikov potrebuješ za 1.000 € mesečnega prihodka.</p>
                                 `
                             },
                             {
-                                id: 'l3',
-                                title: 'Generating Million Dollar Ideas',
-                                duration: '15:45',
+                                id: 'm1-l3',
+                                title: '1.3 SaaS ni pasivni dohodek',
+                                duration: '10:00',
                                 videoId: 'dQw4w9WgXcQ',
                                 desc: `
-                                    <h3>Use the Calculator Tool</h3>
-                                    <p>Go to the <strong>Builder Tools</strong> tab below. Use the Idea Validator on your concepts.</p>
-                                    <h3>Research Methods</h3>
+                                    <h3>Lekcija: Realnost SaaS-a</h3>
+                                    <p>Veliko ljudi misli: "Naredim app in potem samo pobiram naročnine." To skoraj nikoli ne drži.</p>
+                                    
+                                    <h3>SaaS zahteva:</h3>
                                     <ul>
-                                        <li><strong>App Store 1-Star Reviews:</strong> Find what people hate about existing apps. Fix it.</li>
-                                        <li><strong>Reddit Complaints:</strong> Search for "how to fix" or "alternative to".</li>
-                                        <li><strong>Manual Work:</strong> Look for businesses using Excel spreadsheets. Replace Excel with an App.</li>
+                                        <li>Podporo uporabnikom</li>
+                                        <li>Stalne izboljšave</li>
+                                        <li>Komunikacijo in razumevanje trga</li>
                                     </ul>
+
+                                    <p>SaaS je posel, ne avtomat. Toda to je dobra novica, saj konkurenca odpade in tisti, ki ostanejo, imajo prednost.</p>
+
+                                    <h3>Action Step</h3>
+                                    <p>Napiši, zakaj želiš graditi SaaS. Ne zaradi denarja – ampak zaradi problema, ki ga želiš rešiti.</p>
+                                `
+                            },
+                            {
+                                id: 'm1-l4',
+                                title: '1.4 Kako SaaS dejansko deluje',
+                                duration: '12:00',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Lekcija: Sistem, ne aplikacija</h3>
+                                    <p>Ko uporabnik pride na SaaS, se zgodi več stvari hkrati: obisk, registracija, plačilo, uporaba, shranjevanje podatkov.</p>
+                                    
+                                    <h3>Osnovni deli SaaS-a</h3>
+                                    <ul>
+                                        <li><strong>Frontend:</strong> kar uporabnik vidi</li>
+                                        <li><strong>Backend:</strong> logika</li>
+                                        <li><strong>Baza podatkov:</strong> podatki</li>
+                                        <li><strong>Avtentikacija:</strong> login</li>
+                                        <li><strong>Plačilni sistem:</strong> billing</li>
+                                    </ul>
+
+                                    <h3>Action Step</h3>
+                                    <p>Nariši (tudi na papir) osnovni flow: uporabnik → registracija → plačilo → uporaba.</p>
+                                `
+                            },
+                            {
+                                id: 'm1-l5',
+                                title: '1.5 Povzetek modula',
+                                duration: '5:00',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Povzetek</h3>
+                                    <p>V tem modulu smo obdelali:</p>
+                                    <ul>
+                                        <li>Kaj SaaS je (poslovni model + tehnologija)</li>
+                                        <li>Zakaj je močan (MRR, skalabilnost)</li>
+                                        <li>Zakaj ni pasiven (zahteva delo in podporo)</li>
+                                        <li>Kako deluje kot sistem</li>
+                                    </ul>
+                                    <p>To je trdna osnova za nadaljevanje v vrste SaaS-ov in mentalni model founderja.</p>
                                 `
                             }
                         ]
                     },
                     {
-                        title: 'Phase 2: Building (No Code)',
+                        title: 'MODUL 2: VRSTE SaaS & MENTALNI MODEL',
                         lessons: [
                             {
-                                id: 'l4',
-                                title: 'The Stack: Bubble vs FlutterFlow',
-                                duration: '18:20',
+                                id: 'm2-l1',
+                                title: '2.1 B2B vs B2C SaaS',
+                                duration: '15:00',
                                 videoId: 'dQw4w9WgXcQ',
                                 desc: `
-                                    <p>You do not need to be a programmer to build SaaS in 2025.</p>
-                                    <h3>Top Tools</h3>
-                                    <ul>
-                                        <li><strong>Bubble.io:</strong> Best for complex web apps (Logic heavy).</li>
-                                        <li><strong>FlutterFlow:</strong> Best for native mobile apps.</li>
-                                        <li><strong>Make.com:</strong> The glue that connects everything (Automation).</li>
-                                    </ul>
+                                    <h3>Lekcija: B2B in B2C razlike</h3>
+                                    <p><strong>B2B SaaS (Business to Business):</strong> Manj uporabnikov, višje cene, daljši onboarding. Pogosto lažje za začetnike.</p>
+                                    <p><strong>B2C SaaS (Business to Consumer):</strong> Več uporabnikov, nižje cene, več podpore.</p>
+                                    
+                                    <h3>Action Step</h3>
+                                    <p>Izberi, komu bi raje prodajal – in zakaj.</p>
                                 `
-                            },
-                            {
-                                id: 'l5',
-                                title: 'Database Design 101',
-                                duration: '10:15',
-                                videoId: 'dQw4w9WgXcQ',
-                                desc: '<p>How to structure your User, Subscription, and Data tables effectively.</p>'
                             }
                         ]
                     },
                     {
-                        title: 'Phase 3: Sales & Growth',
+                        title: 'MODUL 3: PROBLEM → IDEJA → VALIDACIJA',
                         lessons: [
                             {
-                                id: 'l6',
-                                title: 'Cold DM Strategies',
-                                duration: '14:00',
+                                id: 'm3-l2',
+                                title: '3.2 Kako najti dober SaaS problem',
+                                duration: '20:00',
                                 videoId: 'dQw4w9WgXcQ',
                                 desc: `
-                                    <h3>The Outreach Equation</h3>
-                                    <p>Volume x Offer x Trust = Sales.</p>
-                                    <p>Learn how to craft messages that don't feel like spam.</p>
+                                    <h3>Lekcija: Lastnosti dobrega problema</h3>
+                                    <p>Dober SaaS problem se ponavlja, je boleč in zanj ljudje že plačujejo obstoječe rešitve.</p>
+                                    <div class="highlight-box">
+                                        Če ni konkurence → običajno ni trga.
+                                    </div>
+                                    <h3>Action Step</h3>
+                                    <p>Zapiši 5 problemov, ki jih imaš ti ali tvoji znanci v poslu.</p>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        title: 'MODUL 4: ORODJA (TOOL-BASED LEARNING)',
+                        lessons: [
+                            {
+                                id: 'm4-l1',
+                                title: '4.1 Notion kot SaaS HQ',
+                                duration: '15:00',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Lekcija: Kako postaviti Notion za SaaS</h3>
+                                    <p>Struktura: Ideas, Problems, Features, Roadmap. Notion ni za lepoto, ampak za jasnost.</p>
+                                    <h3>Action Step</h3>
+                                    <p>Ustvari Notion page z naslovom “My SaaS”.</p>
                                 `
                             },
                             {
-                                id: 'l7',
-                                title: 'Viral Content for SaaS',
-                                duration: '9:30',
+                                id: 'm4-l4',
+                                title: '4.4 Stripe & plačila',
+                                duration: '15:00',
                                 videoId: 'dQw4w9WgXcQ',
-                                desc: '<p>Using TikTok and Reels to demo your tool and get free traffic.</p>'
+                                desc: `
+                                    <h3>Lekcija: Zakaj je billing kritičen</h3>
+                                    <p>Plačila niso samo denar, so tudi UX in zaupanje. Stripe obdeluje kartice, skrbi za naročnine in omogoča rast.</p>
+                                    <h3>Action Step</h3>
+                                    <p>Oglej si Stripe dashboard (tudi demo).</p>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        title: 'MODUL 5: BUILD MVP',
+                        lessons: [
+                            {
+                                id: 'm5-l1',
+                                title: '5.1 Kaj je MVP',
+                                duration: '15:00',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Lekcija: MVP filozofija</h3>
+                                    <p><strong>MVP (Minimum Viable Product):</strong> 1 core feature, brez lepote, samo funkcija.</p>
+                                    <p>Če ni feedbacka → ni MVP-ja.</p>
+                                `
+                            }
+                        ]
+                    },
+                    {
+                        title: 'MODUL 6: MONETIZACIJA & RETENTION',
+                        lessons: [
+                            {
+                                id: 'm6-l2',
+                                title: '6.2 Zakaj uporabniki ostanejo',
+                                duration: '15:00',
+                                videoId: 'dQw4w9WgXcQ',
+                                desc: `
+                                    <h3>Lekcija: Retention ni marketing</h3>
+                                    <p>Uporabniki ostanejo, ker dobijo vrednost hitro, razumejo produkt in imajo navado.</p>
+                                `
                             }
                         ]
                     }
