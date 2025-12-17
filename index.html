@@ -455,11 +455,16 @@
         <header>
             <div class="logo-container"
                 style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px;">
-                <!-- Icon from logo -->
-                <svg width="60" height="60" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="15" y="10" width="45" height="25" rx="5" fill="#2563eb" />
-                    <rect x="10" y="40" width="50" height="25" rx="5" fill="#60a5fa" />
-                    <path d="M35 55 Q25 45 35 35" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" />
+                <!-- Icon from logo - stacked layers with flow curve -->
+                <svg width="55" height="55" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Top layer (dark blue) -->
+                    <path d="M25 15 L70 15 Q80 15 80 25 L80 35 Q80 40 70 40 L25 40 Q15 40 15 30 L15 25 Q15 15 25 15 Z"
+                        fill="#2563eb" />
+                    <!-- Bottom layer (light blue) -->
+                    <path d="M20 50 L75 50 Q85 50 85 60 L85 75 Q85 85 75 85 L20 85 Q10 85 10 75 L10 60 Q10 50 20 50 Z"
+                        fill="#60a5fa" />
+                    <!-- Flow curve (white) -->
+                    <path d="M45 75 Q25 60 45 40" stroke="white" stroke-width="6" fill="none" stroke-linecap="round" />
                 </svg>
                 <!-- Text -->
                 <span
