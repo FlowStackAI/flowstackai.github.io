@@ -13,6 +13,8 @@
         :root {
             --sidebar-width: 260px;
             --primary-color: #4a6cf7;
+            --secondary-color: #6a11cb;
+            --accent-gradient: linear-gradient(135deg, #4a6cf7 0%, #6a11cb 100%);
             --bg-light: #f8fafc;
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -51,10 +53,24 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--text-main);
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: var(--accent-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-decoration: none;
+            filter: drop-shadow(0 0 8px rgba(74, 108, 247, 0.2));
+        }
+
+        .details-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: var(--accent-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
         }
 
         .sidebar-logo img {
@@ -97,13 +113,14 @@
 
         .nav-item:hover,
         .nav-item.active {
-            background: #eff6ff;
-            color: var(--primary-color);
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 108, 247, 0.2);
         }
 
         .nav-item:hover i,
         .nav-item.active i {
-            color: var(--primary-color);
+            color: white;
         }
 
         /* User Menu in Sidebar */
@@ -243,7 +260,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: conic-gradient(var(--primary-color) 11%, #e2e8f0 0);
+            background: var(--accent-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -300,25 +317,48 @@
         }
 
         .course-card {
-            background: white;
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
         .course-card:hover {
+            transform: translateY(-4px);
             border-color: var(--primary-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .course-card:hover::before {
+            opacity: 1;
         }
 
         .course-card.active {
             border-color: var(--primary-color);
-            background: #eff6ff;
+            background: #f1f5f9;
+        }
+
+        .course-card.active::before {
+            opacity: 1;
         }
 
         .course-title {
@@ -474,18 +514,194 @@
         }
 
         .save-btn {
-            background: var(--primary-color);
+            background: var(--accent-gradient);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.2);
         }
 
         .save-btn:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .details-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            overflow-y: auto;
+            backdrop-filter: blur(4px);
+        }
+
+        .details-content {
+            background: white;
+            margin: 5% auto;
+            padding: 40px;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-details {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+
+        .close-details:hover {
+            color: #1e293b;
+        }
+
+        .path-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .details-description {
+            font-size: 1.1rem;
+            color: #64748b;
+            margin-bottom: 40px;
+            max-width: 800px;
+            line-height: 1.6;
+        }
+
+        .how-it-works,
+        .packages-section {
+            margin-top: 50px;
+        }
+
+        .how-it-works h3,
+        .packages-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #1e293b;
+        }
+
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .step-item {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-gradient);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .package-card {
+            border: 1px solid #e2e8f0;
+            padding: 30px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .package-card.featured {
+            border: 2px solid var(--primary-color);
+            background: #f8faff;
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .package-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .package-price {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+        }
+
+        .package-features {
+            list-style: none;
+            margin-bottom: 30px;
+            flex: 1;
+        }
+
+        .package-features li {
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .package-features li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #10b981;
+        }
+
+        .select-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent-gradient);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(74, 108, 247, 0.1);
+        }
+
+        .select-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 15px rgba(74, 108, 247, 0.2);
         }
 
         .loading {
@@ -509,11 +725,11 @@
             display: none;
         }
     </style>
-    </style>
 </head>
 
 <body>
-    <div id="loading" class="loading">Spletna stran se nalaga...</div>
+    <div id="loading" class="loading" style="background: var(--accent-gradient); color: white;">Loading FlowStack...
+    </div>
 
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar" style="display: none;">
@@ -524,29 +740,29 @@
 
         <nav class="nav-section">
             <a href="#" class="nav-item active" onclick="showView('dashboard')">
-                <i class="fas fa-home"></i> Nadzorna plošča
+                <i class="fas fa-home"></i> Dashboard
             </a>
             <a href="#" class="nav-item" onclick="showView('ai-chat')">
-                <i class="fas fa-robot"></i> AI Orodja
+                <i class="fas fa-robot"></i> AI Tools
             </a>
 
-            <div class="nav-label">Viri</div>
+            <div class="nav-label">RESOURCES</div>
             <a href="#" class="nav-item">
-                <i class="fas fa-book"></i> Knjižnica ukazov
+                <i class="fas fa-book"></i> Prompt Library
             </a>
         </nav>
 
         <div class="user-widget">
             <div class="user-dropdown" id="userDropdown">
                 <a href="#" class="dropdown-item" onclick="showView('settings')">
-                    <i class="fas fa-user-cog"></i> Nastavitve računa
+                    <i class="fas fa-user-cog"></i> Account Settings
                 </a>
                 <a href="#" class="dropdown-item">
-                    <i class="fas fa-credit-card"></i> Naročnina
+                    <i class="fas fa-credit-card"></i> Subscription
                 </a>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
                 <a href="#" class="dropdown-item" onclick="handleLogout()" style="color: #ef4444;">
-                    <i class="fas fa-sign-out-alt"></i> Odjava
+                    <i class="fas fa-sign-out-alt"></i> Log Out
                 </a>
             </div>
             <div class="user-info" onclick="toggleUserDropdown()">
@@ -554,7 +770,7 @@
                     <i class="fas fa-user" style="color: #94a3b8;"></i>
                 </div>
                 <div class="user-details">
-                    <div class="user-name" id="userNameDisplay">Uporabnik</div>
+                    <div class="user-name" id="userNameDisplay">User</div>
                     <div class="user-email" id="userEmailDisplay">...</div>
                 </div>
                 <i class="fas fa-chevron-up" style="font-size: 0.75rem; color: var(--text-muted);"></i>
@@ -567,7 +783,9 @@
         <!-- Dashboard View -->
         <div id="view-dashboard">
             <div class="page-header">
-                <h1 class="page-title">Personal plan</h1>
+                <h1 class="page-title"
+                    style="background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    Personal plan</h1>
                 <div class="breadcrumb">
                     AI Bots and Automation <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
                 </div>
@@ -575,42 +793,27 @@
 
             <div class="progress-section">
                 <div class="progress-circle">
-                    <div class="progress-circle-inner">11%</div>
+                    <div class="progress-circle-inner" style="background: white; color: var(--primary-color);">11%</div>
                 </div>
                 <div class="progress-info">
-                    <div class="progress-text">Getting warmed up!</div>
+                    <div class="progress-text" style="font-weight: 600; color: var(--text-main);">Getting warmed up!
+                    </div>
                 </div>
             </div>
 
-            <div class="section-label">Tečaji</div>
+            <div class="section-label">COURSES</div>
             <div class="courses-grid" id="coursesGrid">
-                <div class="course-card active">
-                    <div class="course-title">Start Automation Journey</div>
-                    <div class="course-meta">Tečaj 1</div>
-                    <div class="progress-bar-mini"
-                        style="height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 10px; position: relative;">
-                        <div style="width: 11%; height: 100%; background: var(--primary-color); border-radius: 2px;">
-                        </div>
-                    </div>
-                </div>
-                <div class="course-card">
-                    <div class="course-title">Launch Inventory Agent</div>
-                    <div class="course-meta">Tečaj 2</div>
-                </div>
-                <div class="course-card">
-                    <div class="course-title">Build Feedback Agent</div>
-                    <div class="course-meta">Tečaj 3</div>
-                </div>
+                <!-- Populated by JS -->
             </div>
 
             <div class="module-group">
-                <div class="module-name">Modul 1: Understand the Game</div>
-                <div class="lesson-count">6 lekcij</div>
+                <div class="module-name">Module 1: Understand the Game</div>
+                <div class="lesson-count">6 Lessons</div>
                 <div class="module-list">
                     <a href="course.html" class="lesson-item">
-                        <div class="lesson-icon"><i class="fas fa-play"></i></div>
+                        <div class="lesson-icon" style="background: #eff6ff;"><i class="fas fa-play"></i></div>
                         <div class="lesson-info">
-                            <div class="lesson-meta" style="font-size: 0.7rem; color: var(--text-muted);">Lekcija 1
+                            <div class="lesson-meta" style="font-size: 0.7rem; color: var(--text-muted);">Lesson 1
                             </div>
                             <div class="lesson-title">Why you're here</div>
                         </div>
@@ -618,7 +821,7 @@
                     <div class="lesson-item" style="opacity: 0.6;">
                         <div class="lesson-icon"><i class="fas fa-lock"></i></div>
                         <div class="lesson-info">
-                            <div class="lesson-meta" style="font-size: 0.7rem; color: var(--text-muted);">Lekcija 2
+                            <div class="lesson-meta" style="font-size: 0.7rem; color: var(--text-muted);">Lesson 2
                             </div>
                             <div class="lesson-title">Learn how automations work</div>
                         </div>
@@ -630,39 +833,45 @@
 
         <!-- AI Chat View (Hidden by default) -->
         <div id="view-ai-chat"
-            style="display: none; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <h2 style="font-size: 2rem; margin-bottom: 40px;">How can I help you?</h2>
-            <!-- Chat interface would go here -->
-            <p style="color: var(--text-muted);">Vmesnik za klepet z načrtovanim AI asistentom.</p>
+            style="display: none; height: 100%; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <h2
+                style="font-size: 2.5rem; margin-bottom: 20px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                How can I help you?</h2>
+            <p style="color: var(--text-muted); max-width: 500px; line-height: 1.6;">Welcome to FlowStack AI. Access our
+                specialized agents and automation tools here.</p>
+            <div style="margin-top: 40px; display: flex; gap: 15px;">
+                <button class="save-btn">Start Chat</button>
+                <button class="save-btn" style="background: #e2e8f0; color: var(--text-main);">Explore Agents</button>
+            </div>
         </div>
 
         <!-- Settings View (Hidden by default) -->
         <div id="view-settings" style="display: none;">
             <div class="page-header">
-                <h1 class="page-title">Nastavitve</h1>
-                <p class="settings-section-desc">Upravljajte svoj račun in nastavitve naročnine.</p>
+                <h1 class="page-title">Settings</h1>
+                <p class="settings-section-desc">Manage your account and subscription preferences.</p>
             </div>
 
             <div class="settings-container">
                 <aside class="settings-nav">
-                    <div class="settings-nav-item active"><i class="fas fa-user"></i> Račun</div>
-                    <div class="settings-nav-item"><i class="fas fa-lock"></i> Geslo</div>
-                    <div class="settings-nav-item"><i class="fas fa-history"></i> Zgodovina plačil</div>
-                    <div class="settings-nav-item"><i class="fas fa-tasks"></i> Upravljanje paketa</div>
+                    <div class="settings-nav-item active"><i class="fas fa-user"></i> Account</div>
+                    <div class="settings-nav-item"><i class="fas fa-lock"></i> Password</div>
+                    <div class="settings-nav-item"><i class="fas fa-history"></i> Billing History</div>
+                    <div class="settings-nav-item"><i class="fas fa-tasks"></i> Plan Management</div>
                 </aside>
                 <div class="settings-content">
-                    <h3 class="settings-section-title">Račun</h3>
-                    <p class="settings-section-desc">Posodobite svoje ime in e-poštni naslov.</p>
+                    <h3 class="settings-section-title">Account</h3>
+                    <p class="settings-section-desc">Update your name and email address.</p>
 
                     <div class="form-group">
-                        <label class="form-label">Ime in priimek</label>
-                        <input type="text" class="form-input" id="settingsName" placeholder="Vaše ime">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" id="settingsName" placeholder="Your name">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">E-pošta</label>
+                        <label class="form-label">Email Address</label>
                         <input type="email" class="form-input" id="settingsEmail" disabled>
                     </div>
-                    <button class="save-btn">Shrani spremembe</button>
+                    <button class="save-btn" style="background: var(--accent-gradient);">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -1082,7 +1291,7 @@
                     <div class="course-meta">${path.shortDesc}</div>
                     ${index === 0 ? `
                     <div class="progress-bar-mini" style="height: 4px; background: #e2e8f0; border-radius: 2px; margin-top: 10px; position: relative;">
-                        <div style="width: 11%; height: 100%; background: var(--primary-color); border-radius: 2px;"></div>
+                        <div style="width: 11%; height: 100%; background: var(--accent-gradient); border-radius: 2px;"></div>
                     </div>` : ''}
                 `;
                 grid.appendChild(card);
