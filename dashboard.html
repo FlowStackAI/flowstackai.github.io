@@ -1734,16 +1734,16 @@
 
             const email = session.user.email;
             const metadata = session.user.user_metadata || {};
-            const name = metadata.display_name || email.split('@')[0];
+            const name = metadata.full_name || email.split('@')[0];
 
             const nameDisplay = document.getElementById('userNameDisplay');
             const emailDisplay = document.getElementById('userEmailDisplay');
             const settingsName = document.getElementById('settingsName');
             const settingsEmail = document.getElementById('settingsEmail');
 
-            if (nameDisplay) nameDisplay.textContent = metadata.display_name || (name.charAt(0).toUpperCase() + name.slice(1));
+            if (nameDisplay) nameDisplay.textContent = metadata.full_name || (name.charAt(0).toUpperCase() + name.slice(1));
             if (emailDisplay) emailDisplay.textContent = email;
-            if (settingsName) settingsName.value = metadata.display_name || (name.charAt(0).toUpperCase() + name.slice(1));
+            if (settingsName) settingsName.value = metadata.full_name || (name.charAt(0).toUpperCase() + name.slice(1));
             if (settingsEmail) settingsEmail.value = email;
         }
 
@@ -1768,7 +1768,7 @@
             try {
                 const { data, error } = await supabaseClient.auth.updateUser({
                     email: newEmail,
-                    data: { display_name: newName }
+                    data: { full_name: newName }
                 });
 
                 if (error) throw error;
