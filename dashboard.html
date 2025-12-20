@@ -823,6 +823,132 @@
             filter: brightness(1.1);
         }
 
+        /* AI Model Selection Modal */
+        .model-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 3000;
+            backdrop-filter: blur(2px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-modal {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .model-modal-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .model-modal-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .model-modal-close {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: color 0.2s;
+        }
+
+        .model-modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .model-list {
+            padding: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .model-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .model-item:hover {
+            background: #f8fafc;
+        }
+
+        .model-item.selected {
+            background: #f1f5f9;
+        }
+
+        .model-item-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            background: #f1f5f9;
+        }
+
+        .model-item-name {
+            flex: 1;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .model-item-check {
+            color: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .model-item.selected .model-item-check {
+            opacity: 1;
+        }
+
+        /* Simple check circle style to match image */
+        .check-circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .model-item.selected .check-circle {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .model-item.selected .check-circle::after {
+            content: "\f00c";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            color: white;
+            font-size: 0.6rem;
+        }
+
 
         .details-overlay {
             display: none;
@@ -1160,9 +1286,9 @@
                         <div class="chat-input-wrapper">
                             <input type="text" id="aiChatInput" placeholder="Ask anything"
                                 onkeypress="if(event.key === 'Enter') sendAiMessage()">
-                            <div class="model-selector">
+                            <div class="model-selector" id="aiModelSelector" onclick="toggleModelModal()">
                                 <i class="fas fa-bolt" style="color: #f59e0b; font-size: 0.7rem;"></i>
-                                ChatGPT
+                                <span id="currentAiModel">ChatGPT</span>
                                 <i class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 2px;"></i>
                             </div>
                             <button class="send-btn-circle" onclick="sendAiMessage()">
@@ -1331,6 +1457,19 @@
 
     <div id="detailsOverlay" class="details-overlay"></div>
 
+    <!-- AI Model Selection Modal -->
+    <div class="model-modal-overlay" id="modelModalOverlay" onclick="toggleModelModal(event)">
+        <div class="model-modal" onclick="event.stopPropagation()">
+            <div class="model-modal-header">
+                <h3>AI models</h3>
+                <i class="fas fa-times model-modal-close" onclick="toggleModelModal()"></i>
+            </div>
+            <div class="model-list" id="aiModelList">
+                <!-- Models will be populated by JS -->
+            </div>
+        </div>
+    </div>
+
     <!-- Fin Support Chat Widget -->
     <div class="fin-chat-trigger" onclick="toggleFinChat()">
         <i class="fas fa-comment-dots"></i>
@@ -1363,6 +1502,73 @@
 
     <script>
         let currentLang = 'en';
+        let selectedModel = 'ChatGPT';
+
+        const aiModels = [
+            { id: 'chatgpt', name: 'ChatGPT', icon: 'fas fa-bolt', color: '#f59e0b' },
+            { id: 'deepseek', name: 'DeepSeek', icon: 'fas fa-search', color: '#3b82f6' },
+            { id: 'chatgpt_image', name: 'chatGPT Image', icon: 'fas fa-image', color: '#10b981' },
+            { id: 'nano_banana', name: 'nano banana', icon: 'fas fa-leaf', color: '#eab308' },
+            { id: 'claude', name: 'Claude', icon: 'fas fa-brain', color: '#ec4899' },
+            { id: 'perplexity', name: 'Perplexity AI', icon: 'fas fa-globe', color: '#06b6d4' },
+            { id: 'stable_diffusion', name: 'Stable Diffusion', icon: 'fas fa-paint-brush', color: '#8b5cf6' },
+            { id: 'gemini', name: 'Gemini', icon: 'fas fa-stars', color: '#4f46e5' },
+            { id: 'leonardo', name: 'Leonardo AI', icon: 'fas fa-palette', color: '#f43f5e' },
+            { id: 'llama', name: 'LLaMa', icon: 'fas fa-paw', color: '#14b8a6' },
+            { id: 'mistral', name: 'Mistral', icon: 'fas fa-wind', color: '#6366f1' },
+            { id: 'grok', name: 'Grok', icon: 'fas fa-lightbulb', color: '#f97316' },
+            { id: 'midjourney', name: 'Midjourney', icon: 'fas fa-mountain', color: '#334155' }
+        ];
+
+        function populateModelList() {
+            const list = document.getElementById('aiModelList');
+            if (!list) return;
+            list.innerHTML = '';
+            aiModels.forEach(model => {
+                const item = document.createElement('div');
+                item.className = `model-item ${selectedModel === model.name ? 'selected' : ''}`;
+                item.onclick = () => selectModel(model.name);
+                item.innerHTML = `
+                    <div class="model-item-icon">
+                        <i class="${model.icon}" style="color: ${model.color}"></i>
+                    </div>
+                    <div class="model-item-name">${model.name}</div>
+                    <div class="check-circle"></div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function toggleModelModal(e) {
+            const overlay = document.getElementById('modelModalOverlay');
+            if (!overlay) return;
+            const isShowing = overlay.style.display === 'flex';
+            if (!isShowing) {
+                populateModelList();
+                overlay.style.display = 'flex';
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function selectModel(modelName) {
+            selectedModel = modelName;
+            const modelText = document.getElementById('currentAiModel');
+            if (modelText) modelText.innerText = modelName;
+
+            // Update icon as well
+            const model = aiModels.find(m => m.name === modelName);
+            const selector = document.getElementById('aiModelSelector');
+            if (selector && model) {
+                const icon = selector.querySelector('i.fas');
+                if (icon) {
+                    icon.className = model.icon;
+                    icon.style.color = model.color;
+                }
+            }
+
+            toggleModelModal();
+        }
 
         // --- NAVIGATION & UI ---
         function showView(viewName) {
@@ -1428,10 +1634,28 @@
             const input = document.getElementById('aiChatInput');
             const message = input.value.trim();
             if (message) {
-                // For now, just clear the input and maybe show an alert or mock response
-                // In a real app, this would send the message to an API
-                console.log("Sending AI message:", message);
-                alert("AI: I received your message: \"" + message + "\". This is a UI demo, actual AI integration coming soon!");
+                console.log(`Sending AI message to ${selectedModel}:`, message);
+
+                // Simulate tool-specific response
+                let responsePrefix = "";
+                switch (selectedModel) {
+                    case 'ChatGPT': responsePrefix = "ChatGPT here! 🤖"; break;
+                    case 'DeepSeek': responsePrefix = "DeepSeek at your service. 🔍"; break;
+                    case 'chatGPT Image': responsePrefix = "Generating image concept... 🎨"; break;
+                    case 'nano banana': responsePrefix = "Banana-powered AI ready! 🍌"; break;
+                    case 'Claude': responsePrefix = "Claude here to assist. 🧠"; break;
+                    case 'Perplexity AI': responsePrefix = "Researching your query... 🌐"; break;
+                    case 'Stable Diffusion': responsePrefix = "Painting pixels... 🖌️"; break;
+                    case 'Gemini': responsePrefix = "Gemini processing... ✨"; break;
+                    case 'Leonardo AI': responsePrefix = "Creating art... 🎭"; break;
+                    case 'LLaMa': responsePrefix = "LLaMa standing by. 🦙"; break;
+                    case 'Mistral': responsePrefix = "Mistral responding... 🌬️"; break;
+                    case 'Grok': responsePrefix = "Grokking your request... 💡"; break;
+                    case 'Midjourney': responsePrefix = "Dreaming up visual... 🏔️"; break;
+                    default: responsePrefix = `${selectedModel} responding...`;
+                }
+
+                alert(`${responsePrefix}\n\nI received: "${message}"\n\n(This is a UI demo, actual API integration coming soon!)`);
                 input.value = '';
             }
         }
