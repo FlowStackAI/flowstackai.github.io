@@ -510,11 +510,12 @@
         .form-input {
             width: 100%;
             max-width: 400px;
+            height: 48px;
             padding: 10px 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 0.875rem;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
         .form-input:focus {
@@ -897,7 +898,7 @@
                 <a href="#" class="dropdown-item" onclick="showView('settings')">
                     <i class="fas fa-user-cog"></i> Account Settings
                 </a>
-                <a href="#" class="dropdown-item">
+                <a href="#" class="dropdown-item" onclick="showView('settings'); showSettingsSection('billing');">
                     <i class="fas fa-credit-card"></i> Subscription
                 </a>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border-color);">
@@ -1118,18 +1119,23 @@
                         <p class="settings-section-desc">Need help? Reach out to our support team.</p>
 
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                            <div
-                                style="padding: 24px; border: 1px solid var(--border-color); border-radius: 12px; text-align: center;">
-                                <i class="fas fa-envelope"
+                            <a href="mailto:support@flowstack.ai"
+                                style="text-decoration: none; color: inherit; transition: transform 0.2s;"
+                                class="contact-card">
+                                <div
+                                    style="padding: 24px; border: 1px solid var(--border-color); border-radius: 12px; text-align: center;">
+                                    <i class="fas fa-envelope"
+                                        style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
+                                    <h4 style="margin-bottom: 8px;">Email Support</h4>
+                                    <p style="font-size: 0.875rem; color: var(--text-muted);">support@flowstack.ai</p>
+                                </div>
+                            </a>
+                            <div onclick="toggleFinChat()"
+                                style="padding: 24px; border: 1px solid var(--border-color); border-radius: 12px; text-align: center; cursor: pointer; transition: transform 0.2s;"
+                                class="contact-card">
+                                <i class="fas fa-robot"
                                     style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                                <h4 style="margin-bottom: 8px;">Email Support</h4>
-                                <p style="font-size: 0.875rem; color: var(--text-muted);">support@flowstack.ai</p>
-                            </div>
-                            <div
-                                style="padding: 24px; border: 1px solid var(--border-color); border-radius: 12px; text-align: center;">
-                                <i class="fas fa-comments"
-                                    style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;"></i>
-                                <h4 style="margin-bottom: 8px;">Live Chat</h4>
+                                <h4 style="margin-bottom: 8px;">AI Support</h4>
                                 <p style="font-size: 0.875rem; color: var(--text-muted);">Available 24/7</p>
                             </div>
                         </div>
