@@ -1125,18 +1125,52 @@
             </div>
         </div>
 
-        <!-- AI Chat View (Hidden by default) -->
-        <div id="view-ai-chat"
-            style="display: none; height: 100%; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-            <h2
-                style="font-size: 2.5rem; margin-bottom: 20px; background: var(--accent-gradient); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                How can I help you?</h2>
+        <!-- AI Chat View -->
+        <div id="view-ai-chat" style="display: none; height: 100%;">
+            <div class="chat-view-container">
+                <header class="chat-view-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-robot" style="color: var(--primary-color);"></i>
+                        <h2>AI chat</h2>
+                    </div>
+                    <button class="history-btn" title="Chat History">
+                        <i class="fas fa-history"></i>
+                    </button>
+                </header>
 
-            <p style="color: var(--text-muted); max-width: 500px; line-height: 1.6;">Welcome to FlowStack AI. Access our
-                specialized agents and automation tools here.</p>
-            <div style="margin-top: 40px; display: flex; gap: 15px;">
-                <button class="save-btn">Start Chat</button>
-                <button class="save-btn" style="background: #e2e8f0; color: var(--text-main);">Explore Agents</button>
+                <div class="chat-hero">
+                    <h1>How can I help you?</h1>
+
+                    <div class="chat-input-area">
+                        <div class="suggestion-chips">
+                            <div class="chip" onclick="useSuggestion('Give advice')">
+                                <i class="far fa-lightbulb" style="color: #eab308;"></i> Give advice
+                            </div>
+                            <div class="chip" onclick="useSuggestion('Brainstorm ideas')">
+                                <i class="fas fa-wand-magic-sparkles" style="color: #a855f7;"></i> Brainstorm ideas
+                            </div>
+                            <div class="chip" onclick="useSuggestion('Summarize text')">
+                                <i class="fas fa-align-left" style="color: #3b82f6;"></i> Summarize text
+                            </div>
+                            <div class="chip" onclick="useSuggestion('Help me write')">
+                                <i class="fas fa-pen-nib" style="color: #ec4899;"></i> Help me write
+                            </div>
+                        </div>
+
+                        <div class="chat-input-wrapper">
+                            <input type="text" id="aiChatInput" placeholder="Ask anything"
+                                onkeypress="if(event.key === 'Enter') sendAiMessage()">
+                            <div class="model-selector">
+                                <i class="fas fa-bolt" style="color: #f59e0b; font-size: 0.7rem;"></i>
+                                ChatGPT
+                                <i class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 2px;"></i>
+                            </div>
+                            <button class="send-btn-circle" onclick="sendAiMessage()">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1380,6 +1414,26 @@
         function toggleFinChat() {
             const win = document.getElementById('finChatWindow');
             win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function useSuggestion(text) {
+            const input = document.getElementById('aiChatInput');
+            if (input) {
+                input.value = text;
+                input.focus();
+            }
+        }
+
+        function sendAiMessage() {
+            const input = document.getElementById('aiChatInput');
+            const message = input.value.trim();
+            if (message) {
+                // For now, just clear the input and maybe show an alert or mock response
+                // In a real app, this would send the message to an API
+                console.log("Sending AI message:", message);
+                alert("AI: I received your message: \"" + message + "\". This is a UI demo, actual AI integration coming soon!");
+                input.value = '';
+            }
         }
 
 
