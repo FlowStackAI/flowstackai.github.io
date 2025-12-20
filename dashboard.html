@@ -509,13 +509,13 @@
 
         .form-input {
             width: 100%;
-            max-width: 600px;
+            max-width: 400px;
             height: 48px;
             padding: 10px 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 0.875rem;
-            transition: all 0.2s;
+            transition: all 0.2;
         }
 
         .form-input:focus {
@@ -1023,9 +1023,9 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email Address</label>
-                            <input type="email" class="form-input" id="settingsEmail" disabled>
+                            <input type="email" class="form-input" id="settingsEmail">
                         </div>
-                        <button class="save-btn">Save Changes</button>
+                        <button class="save-btn" id="updateAccountBtn">Save Changes</button>
                     </div>
 
                     <!-- Password Section -->
@@ -1035,18 +1035,15 @@
                             secure.</p>
 
                         <div class="form-group">
-                            <label class="form-label">Current password</label>
-                            <input type="password" class="form-input" placeholder="Enter current password">
-                        </div>
-                        <div class="form-group">
                             <label class="form-label">New password</label>
-                            <input type="password" class="form-input" placeholder="Enter new password">
+                            <input type="password" class="form-input" id="newPassword" placeholder="Enter new password">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Confirm password</label>
-                            <input type="password" class="form-input" placeholder="Repeat new password">
+                            <input type="password" class="form-input" id="confirmPassword"
+                                placeholder="Repeat new password">
                         </div>
-                        <button class="save-btn">Save password</button>
+                        <button class="save-btn" id="updatePasswordBtn">Save password</button>
                     </div>
 
                     <!-- Billing History Section -->
@@ -1754,6 +1751,82 @@
                 window.location.href = 'index.html';
             }
         }
+
+        // --- ACCOUNT & PASSWORD UPDATES ---
+
+        async function updateAccount() {
+            const newName = document.getElementById('settingsName').value;
+            const newEmail = document.getElementById('settingsEmail').value;
+            const btn = document.getElementById('updateAccountBtn');
+            const originalText = btn.textContent;
+
+            btn.textContent = 'Updating...';
+            btn.disabled = true;
+
+            try {
+                const { data, error } = await supabaseClient.auth.updateUser({
+                    email: newEmail,
+                    data: { display_name: newName }
+                });
+
+                if (error) throw error;
+
+                alert('Account updated successfully! If you changed your email, please check both inboxes for confirmation links.');
+
+                // Update UI display
+                if (newName) {
+                    document.getElementById('userNameDisplay').textContent = newName;
+                }
+                document.getElementById('userEmailDisplay').textContent = newEmail;
+
+            } catch (error) {
+                alert('Error updating account: ' + error.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function updatePassword() {
+            const newPass = document.getElementById('newPassword').value;
+            const confirmPass = document.getElementById('confirmPassword').value;
+            const btn = document.getElementById('updatePasswordBtn');
+            const originalText = btn.textContent;
+
+            if (newPass !== confirmPass) {
+                alert('Passwords do not match!');
+                return;
+            }
+
+            if (newPass.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+
+            btn.textContent = 'Updating...';
+            btn.disabled = true;
+
+            try {
+                const { error } = await supabaseClient.auth.updateUser({
+                    password: newPass
+                });
+
+                if (error) throw error;
+
+                alert('Password updated successfully!');
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+
+            } catch (error) {
+                alert('Error updating password: ' + error.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('updateAccountBtn').addEventListener('click', updateAccount);
+        document.getElementById('updatePasswordBtn').addEventListener('click', updatePassword);
 
         // Initialize Grid on Load (Default En)
         renderGrid();
