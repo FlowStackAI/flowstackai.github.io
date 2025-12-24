@@ -54,7 +54,8 @@
             flex-direction: column;
             position: fixed;
             height: 100vh;
-            z-index: 100;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-logo {
@@ -232,6 +233,129 @@
             padding: 60px 80px;
             max-width: 1600px;
             margin-right: auto;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            padding: 0 20px;
+            z-index: 900;
+        }
+
+        .mobile-toggle {
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            background: none;
+            border: none;
+            display: none;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 950;
+            backdrop-filter: blur(2px);
+        }
+
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                margin-left: 0;
+                padding: 80px 40px 40px;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .mobile-header {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .settings-container {
+                flex-direction: column;
+                gap: 30px;
+                padding: 24px;
+            }
+
+            .settings-nav {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .settings-nav-item {
+                white-space: nowrap;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-wrapper {
+                padding: 80px 20px 20px;
+            }
+
+            .progress-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .chat-view-header h2 {
+                font-size: 1rem;
+            }
+
+            .chat-hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .details-content {
+                padding: 20px;
+                margin: 0;
+                height: 100%;
+                width: 100%;
+                border-radius: 0;
+            }
+
+            .steps-container,
+            .packages-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Header / Breadcrumb */
@@ -1371,12 +1495,32 @@
     <div id="loading" class="loading" style="background: var(--accent-gradient); color: white;">Loading FlowStack...
     </div>
 
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <button class="mobile-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="sidebar-logo" style="padding: 0; font-size: 1.25rem;">
+            <img src="img/flowstack-icon.png" alt="FlowStack" style="width: 24px; height: 24px;">
+            <span>FlowStack</span>
+        </div>
+        <div style="width: 24px;"></div> <!-- Spacer for symmetry -->
+    </header>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar" style="display: none;">
-        <a href="#" class="sidebar-logo">
-            <img src="img/flowstack-icon.png" alt="FlowStack">
-            <span>FlowStack</span>
-        </a>
+        <div class="sidebar-logo-wrapper"
+            style="display: flex; align-items: center; justify-content: space-between; padding-right: 16px;">
+            <a href="#" class="sidebar-logo">
+                <img src="img/flowstack-icon.png" alt="FlowStack">
+                <span>FlowStack</span>
+            </a>
+            <button class="mobile-toggle" onclick="toggleSidebar()" style="padding: 10px; margin-top: 10px;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
         <nav class="nav-section">
             <a href="#" class="nav-item active" onclick="showView('dashboard')">
@@ -1851,6 +1995,14 @@
             // Close dropdown if open
             const dropdown = document.getElementById('userDropdown');
             if (dropdown) dropdown.classList.remove('show');
+
+            // Close sidebar on mobile after navigation
+            if (window.innerWidth <= 1024) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                if (sidebar) sidebar.classList.remove('active');
+                if (overlay) overlay.classList.remove('active');
+            }
         }
 
         function toggleUserDropdown() {
@@ -1887,6 +2039,13 @@
                 input.value = text;
                 input.focus();
             }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
         }
 
         async function sendAiMessage() {
