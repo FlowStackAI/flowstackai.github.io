@@ -365,10 +365,24 @@
             }
         }
 
+        /* Prevent horizontal overflow globally */
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
         @media (max-width: 640px) {
             .main-wrapper {
                 padding: 100px 12px 12px;
                 /* Increased top padding for header */
+                overflow-x: hidden;
+                /* Double safety */
+            }
+
+            .page-title {
+                margin-top: 20px;
+                /* specific spacer for mobile title */
             }
 
             .sidebar {
