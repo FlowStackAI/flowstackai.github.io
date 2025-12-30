@@ -1182,32 +1182,21 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px;
+            padding: 8px 16px;
+            /* Wider padding for pill shape */
             background: #f1f5f9;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
-        }
-
-        .model-selector {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            /* Adjusted padding */
-            background: #f1f5f9;
-            border-radius: 50%;
-            /* Circle shape since no text */
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-main);
-            cursor: pointer;
-            width: 36px;
+            min-width: 60px;
+            width: auto;
             height: 36px;
             justify-content: center;
         }
+
+
 
         .send-btn-circle {
             width: 40px;
