@@ -1142,8 +1142,8 @@
 
         .chat-input-area {
             width: 100%;
-            max-width: 1000px;
-            /* Further expanded */
+            max-width: 800px;
+            /* Reduced back from 1000px */
             margin: 0 auto 40px;
         }
 
@@ -1151,8 +1151,8 @@
             background: white;
             border: 1px solid var(--border-color);
             border-radius: 30px;
-            padding: 16px 16px 16px 30px;
-            /* Larger padding for a bigger box feel */
+            padding: 12px 16px 12px 12px;
+            /* Adjusted padding */
             display: flex;
             align-items: center;
             gap: 12px;
@@ -1195,25 +1195,23 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 12px 6px 16px;
-            /* Added left padding */
+            padding: 8px 12px;
+            /* Adjusted padding */
             background: #f1f5f9;
-            border-radius: 20px;
+            border-radius: 50%;
+            /* Circle shape since no text */
             font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-main);
             cursor: pointer;
-            margin-left: 8px;
-            /* Spacing from input */
-            border-left: 1px solid rgba(0, 0, 0, 0.05);
-            /* Subtle divider effect if needed, though pill shape handles it */
+            width: 36px;
+            height: 36px;
+            justify-content: center;
         }
 
         .send-btn-circle {
             width: 40px;
-            /* Increased back to 40px */
             height: 40px;
-            /* Increased back to 40px */
             background: var(--accent-gradient);
             color: white;
             border-radius: 50%;
@@ -1225,7 +1223,9 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 2px 8px rgba(74, 108, 247, 0.25);
             flex-shrink: 0;
-            margin-left: 4px;
+            margin-right: 4px;
+            /* Margin right since it's on left now */
+            margin-left: 0;
         }
 
         .send-btn-circle:hover {
@@ -1933,16 +1933,16 @@
 
                 <div class="chat-input-section">
                     <div class="chat-input-wrapper">
+                        <button class="send-btn-circle" onclick="sendAiMessage()">
+                            <i class="fas fa-arrow-up"></i>
+                        </button>
                         <input type="text" id="aiChatInput" placeholder="Ask anything"
                             onkeypress="if(event.key === 'Enter') sendAiMessage()">
                         <div class="model-selector" id="aiModelSelector" onclick="toggleModelModal()">
                             <i class="fas fa-bolt" style="color: #f59e0b; font-size: 0.7rem;"></i>
-                            <span id="currentAiModel">ChatGPT</span>
+                            <span id="currentAiModel" style="display: none;">ChatGPT</span>
                             <i class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 2px;"></i>
                         </div>
-                        <button class="send-btn-circle" onclick="sendAiMessage()">
-                            <i class="fas fa-arrow-up"></i>
-                        </button>
                     </div>
                 </div>
             </div>
