@@ -1864,6 +1864,27 @@
             color: var(--primary-color);
             font-weight: bold;
         }
+
+        /* Desktop Sidebar Logic */
+        @media (min-width: 768px) {
+            .chat-view-container {
+                padding-left: 260px;
+                transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .chat-view-container.sidebar-closed {
+                padding-left: 0;
+            }
+
+            /* Override default hidden state for desktop */
+            .chat-sidebar {
+                transform: translateX(0);
+            }
+
+            .chat-view-container.sidebar-closed .chat-sidebar {
+                transform: translateX(-100%);
+            }
+        }
     </style>
 </head>
 
@@ -2463,9 +2484,13 @@
 
         function initChatSystem() {
             renderChatHistory();
-            // Optional: load most recent chat or just stay on "new chat"
+            // Load most recent chat if available
             if (allChats.length > 0) {
-                // loadChat(allChats[0].id); // Uncomment to auto-load last chat
+                // Sort by timestamp desc to get the latest
+                const sorted = [...allChats].sort((a, b) => b.timestamp - a.timestamp);
+                loadChat(sorted[0].id);
+            } else {
+                startNewChat();
             }
         }
 
@@ -2585,8 +2610,14 @@
 
         function toggleChatSidebar() {
             const sidebar = document.getElementById('chatSidebar');
-            if (sidebar) {
-                sidebar.classList.toggle('open');
+            const container = document.querySelector('.chat-view-container');
+
+            if (window.innerWidth >= 768) {
+                // Desktop: Toggle padding/visibility class on container
+                if (container) container.classList.toggle('sidebar-closed');
+            } else {
+                // Mobile: Toggle overlay class on sidebar
+                if (sidebar) sidebar.classList.toggle('open');
             }
         }
 
