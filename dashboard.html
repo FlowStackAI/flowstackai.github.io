@@ -2667,7 +2667,7 @@
                     // USER REQUEST: Disable simulation. 
                     // If you want standard simulation for others, uncomment below, but user said "ONLY deepseek works"
                     // response = getModelResponse(message); 
-                    throw new Error(`Integration for ${selectedModel} is not yet active. Please select DeepSeek.`);
+                    throw new Error(`Integration for ${selectedModel} is not yet active. Please select Gemini or DeepSeek.`);
                 }
 
                 hideTypingIndicator();
@@ -3489,12 +3489,13 @@
         }
 
         // --- GEMINI API INTEGRATION ---
-        let geminiApiKey = ""; // USER: Place your Gemini API key here
+        let geminiApiKey = "AIzaSyBCkitedGJ_AVNQwsXoNy7If1tc0oRYwyA"; // USER: Place your Gemini API key here
 
         async function getGeminiResponse(prompt) {
             if (!geminiApiKey) {
-                console.warn("Gemini API key missing. Using simulation.");
-                return null;
+                console.warn("Gemini API key missing.");
+                // return "Please add your Gemini API Key in code.";
+                throw new Error("Gemini API Key is missing.");
             }
 
             try {
